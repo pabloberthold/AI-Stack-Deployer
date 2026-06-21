@@ -4,1042 +4,874 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Stack Deployer | Podman & DevOps Linux</title>
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <!-- Vue 3 CDN -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Highlight.js for Code formatting -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/yaml.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
-
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #080c14;
-            color: #f1f5f9;
-        }
-        .code-font {
-            font-family: 'Fira Code', monospace;
-        }
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0f19;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #27272a;
-            border-radius: 3px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #3f3f46;
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #080c14; color: #f1f5f9; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0b0f19; }
+        ::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3f3f46; }
+        .app-card:hover { border-color: rgba(52,211,153,0.3); }
     </style>
 </head>
-<body class="min-h-screen bg-[#080c14] text-zinc-100 selection:bg-zinc-800 selection:text-emerald-400 antialiased">
-    <div id="app" class="min-h-screen flex flex-col justify-between">
-        
-        <!-- Header -->
-        <header class="border-b border-zinc-900 bg-[#0b0f19] px-6 py-4 sticky top-0 z-40">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                <div class="flex items-center space-x-3">
-                    <div class="p-2 bg-emerald-950/40 border border-emerald-800/60 rounded-lg text-emerald-400">
-                        <i data-lucide="container" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
-                            AI Stack Deployer
-                            <span class="text-[10px] font-mono bg-purple-900/40 text-purple-400 border border-purple-800/30 px-2 py-0.5 rounded">Exclusivo Podman</span>
-                        </h1>
-                        <p class="text-xs text-zinc-400">Orquestador de entornos locales de IA y motores de búsqueda con aceleración CUDA</p>
-                    </div>
-                </div>
+<body class="min-h-screen bg-[#080c14] text-zinc-100 antialiased">
+<div id="app" class="min-h-screen flex flex-col">
 
-                <!-- Distro Selector -->
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center bg-zinc-950 border border-zinc-900 p-1 rounded-lg">
-                        <button 
-                            @click="customParams.distro = 'ubuntu'" 
-                            :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all flex items-center space-x-1.5 cursor-pointer', customParams.distro === 'ubuntu' ? 'bg-orange-600/20 text-orange-400 border border-orange-500/20' : 'text-zinc-500 hover:text-zinc-300']">
-                            <span>Ubuntu</span>
-                        </button>
-                        <button 
-                            @click="customParams.distro = 'fedora'" 
-                            :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all flex items-center space-x-1.5 cursor-pointer', customParams.distro === 'fedora' ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300']">
-                            <span>Fedora</span>
-                        </button>
-                    </div>
+    <!-- Header -->
+    <header class="border-b border-zinc-900 bg-[#0b0f19] px-6 py-4 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-emerald-950/40 border border-emerald-800/60 rounded-lg text-emerald-400">
+                    <i data-lucide="container" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
+                        AI Stack Deployer
+                        <span class="text-[10px] font-mono bg-purple-900/40 text-purple-400 border border-purple-800/30 px-2 py-0.5 rounded">100% Podman</span>
+                    </h1>
+                    <p class="text-xs text-zinc-400">Orquestador de IA local · llama.cpp · Open WebUI · SearXNG · OpenCode</p>
                 </div>
             </div>
-        </header>
+            <div class="flex items-center bg-zinc-950 border border-zinc-900 p-1 rounded-lg">
+                <button @click="customParams.distro = 'ubuntu'"
+                    :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5', customParams.distro === 'ubuntu' ? 'bg-orange-600/20 text-orange-400 border border-orange-500/20' : 'text-zinc-500 hover:text-zinc-300']">
+                    <i data-lucide="circle-dot" class="w-3 h-3"></i> Ubuntu
+                </button>
+                <button @click="customParams.distro = 'fedora'"
+                    :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all cursor-pointer flex items-center gap-1.5', customParams.distro === 'fedora' ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300']">
+                    <i data-lucide="circle-dot" class="w-3 h-3"></i> Fedora
+                </button>
+            </div>
+        </div>
+    </header>
 
-        <!-- Main Dashboard -->
-        <main class="flex-grow max-w-6xl w-full mx-auto p-6 space-y-8">
-            
+    <main class="flex-grow max-w-6xl w-full mx-auto p-6 space-y-10">
+
+        <!-- ============================== STACK DE APPS ============================== -->
+        <section>
+            <div class="mb-4">
+                <h2 class="text-sm font-bold text-white uppercase tracking-wider">Stack de Aplicaciones Instaladas</h2>
+                <p class="text-xs text-zinc-400 mt-0.5">Todas las herramientas son open source y se ejecutan completamente en tu máquina local.</p>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- llama.cpp -->
+                <a href="https://github.com/ggml-org/llama.cpp" target="_blank"
+                   class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all block hover:bg-zinc-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">llama.cpp</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded">CUDA</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">Motor de inferencia LLM ultraeficiente en C++. Soporta GGUF, aceleración CUDA/Metal y API compatible con OpenAI. El corazón del stack.</p>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>github.com/ggml-org/llama.cpp</span>
+                    </div>
+                </a>
+
+                <!-- Open WebUI -->
+                <a href="https://github.com/open-webui/open-webui" target="_blank"
+                   class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all block hover:bg-zinc-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-blue-500/10 border border-blue-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4 text-blue-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">Open WebUI</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded">WebApp</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">Interfaz web tipo ChatGPT para interactuar con modelos locales. Soporta RAG, búsqueda web, historial de conversaciones y gestión de documentos.</p>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>github.com/open-webui/open-webui</span>
+                    </div>
+                </a>
+
+                <!-- SearXNG -->
+                <a href="https://github.com/searxng/searxng" target="_blank"
+                   class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all block hover:bg-zinc-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="search" class="w-4 h-4 text-emerald-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">SearXNG</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded">RAG</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">Metabuscador privado y auto-hospedado. Se integra con Open WebUI para búsqueda web en tiempo real sin rastreo, con salida JSON para el stack RAG.</p>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>github.com/searxng/searxng</span>
+                    </div>
+                </a>
+
+                <!-- OpenCode -->
+                <a href="https://github.com/anomalyco/opencode" target="_blank"
+                   class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all block hover:bg-zinc-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-purple-500/10 border border-purple-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="code-2" class="w-4 h-4 text-purple-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">OpenCode</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-purple-500/10 text-purple-400 border border-purple-500/20 rounded">CLI+GUI</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">Agente de codificación IA open source (alternativa a Claude Code). Funciona en terminal e IDE. Se configura automáticamente apuntando al llama.cpp local del stack.</p>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>opencode.ai · github.com/anomalyco/opencode</span>
+                    </div>
+                </a>
+
+                <!-- Podman -->
+                <a href="https://github.com/containers/podman" target="_blank"
+                   class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all block hover:bg-zinc-900/30">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-rose-500/10 border border-rose-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="container" class="w-4 h-4 text-rose-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">Podman</span>
+                        </div>
+                        <span class="text-[9px] font-mono px-2 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded">Daemonless</span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">Motor de contenedores sin daemon ni root. Alternativa a Docker 100% OCI-compatible. Usa CDI para acceso a GPU NVIDIA sin privilegios especiales.</p>
+                    <div class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>podman.io · github.com/containers/podman</span>
+                    </div>
+                </a>
+
+                <!-- Firewall (dinámico) -->
+                <div class="app-card bg-[#0b0f19] border border-zinc-900 rounded-xl p-4 space-y-3 transition-all">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-orange-500/10 border border-orange-500/20 rounded-lg flex items-center justify-center">
+                                <i data-lucide="shield" class="w-4 h-4 text-orange-400"></i>
+                            </div>
+                            <span class="text-sm font-bold text-white">{{ customParams.distro === 'fedora' ? 'firewalld' : 'UFW' }}</span>
+                        </div>
+                        <span :class="['text-[9px] font-mono px-2 py-0.5 rounded border', customParams.distro === 'fedora' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20']">
+                            {{ customParams.distro === 'fedora' ? 'Fedora' : 'Ubuntu' }}
+                        </span>
+                    </div>
+                    <p class="text-[11px] text-zinc-400 leading-relaxed">
+                        <template v-if="customParams.distro === 'fedora'">
+                            <span class="text-blue-400 font-semibold">firewalld</span> — Firewall dinámico nativo de Fedora/RHEL. Usa zonas y rich-rules para restringir el acceso por subred a los puertos del stack.
+                        </template>
+                        <template v-else>
+                            <span class="text-orange-400 font-semibold">UFW</span> — Uncomplicated Firewall para Ubuntu/Debian. Configura reglas de entrada por subred para los puertos del stack de forma simple e idempotente.
+                        </template>
+                    </p>
+                    <a :href="customParams.distro === 'fedora' ? 'https://firewalld.org' : 'https://help.ubuntu.com/community/UFW'" target="_blank"
+                       class="flex items-center gap-1 text-[10px] text-emerald-500">
+                        <i data-lucide="external-link" class="w-3 h-3"></i>
+                        <span>{{ customParams.distro === 'fedora' ? 'firewalld.org' : 'help.ubuntu.com/community/UFW' }}</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============================== CONFIGURADOR ============================== -->
+        <section>
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                
-                <!-- Left Column: Settings (7 cols) -->
+
+                <!-- Left: Settings -->
                 <div class="lg:col-span-7 space-y-6">
                     <div class="bg-[#0b0f19] border border-zinc-900 rounded-xl p-6 space-y-6">
-                        
-                        <!-- Header Section -->
                         <div class="border-b border-zinc-900 pb-4 flex justify-between items-center">
                             <div>
                                 <h2 class="text-sm font-bold text-white uppercase tracking-wider">Parámetros del Entorno</h2>
-                                <p class="text-xs text-zinc-400 mt-0.5">Define los puertos, límites de hardware y el modelo LLM GGUF.</p>
+                                <p class="text-xs text-zinc-400 mt-0.5">Configura hardware, modelo GGUF, puertos y red.</p>
                             </div>
-                            <span class="text-[11px] font-mono text-zinc-500">IDEMPOTENCIA ACTIVADA</span>
+                            <span class="text-[11px] font-mono text-zinc-600">IDEMPOTENTE</span>
                         </div>
 
-                        <!-- Hardware Section -->
+                        <!-- Hardware -->
                         <div class="space-y-4">
                             <h3 class="text-xs font-bold text-zinc-400 tracking-wider uppercase flex items-center gap-1.5">
-                                <i data-lucide="cpu" class="w-3.5 h-3.5 text-zinc-400"></i>
-                                <span>1. Recursos de Hardware</span>
+                                <i data-lucide="cpu" class="w-3.5 h-3.5"></i> 1. Hardware
                             </h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <!-- CPU Threads -->
+                            <div class="grid grid-cols-3 gap-4">
                                 <div class="space-y-1.5">
-                                    <label class="text-xs font-medium text-zinc-300">Hilos de CPU</label>
-                                    <input 
-                                        type="number" 
-                                        v-model="customParams.cpuThreads" 
-                                        placeholder="6" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: 6 hilos</span>
+                                    <label class="text-xs font-medium text-zinc-300">Hilos CPU</label>
+                                    <input type="number" v-model="customParams.cpuThreads" placeholder="6"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">Default: 6</span>
                                 </div>
-
-                                <!-- RAM -->
                                 <div class="space-y-1.5">
-                                    <label class="text-xs font-medium text-zinc-300">RAM Sistema (GB)</label>
-                                    <input 
-                                        type="number" 
-                                        v-model="customParams.ram" 
-                                        placeholder="16" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: 16 GB</span>
+                                    <label class="text-xs font-medium text-zinc-300">RAM (GB)</label>
+                                    <input type="number" v-model="customParams.ram" placeholder="16"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">Default: 16</span>
                                 </div>
-
-                                <!-- GPU VRAM -->
                                 <div class="space-y-1.5">
                                     <label class="text-xs font-medium text-zinc-300">VRAM GPU (GB)</label>
-                                    <input 
-                                        type="number" 
-                                        v-model="customParams.vram" 
-                                        placeholder="12" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: 12 GB</span>
+                                    <input type="number" v-model="customParams.vram" placeholder="12"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">Default: 12</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Model Selection -->
+                        <!-- Model -->
                         <div class="space-y-4 pt-2">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-xs font-bold text-zinc-400 tracking-wider uppercase flex items-center gap-1.5">
-                                    <i data-lucide="database" class="w-3.5 h-3.5 text-zinc-400"></i>
-                                    <span>2. Modelo LLM (Gemma, DeepSeek, Qwen, Llama)</span>
+                                    <i data-lucide="database" class="w-3.5 h-3.5"></i> 2. Modelo GGUF
                                 </h3>
-                                <button 
-                                    @click="toggleCustomModelMode" 
-                                    class="text-[11px] text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
-                                >
-                                    {{ customModelMode ? 'Elegir del Catálogo (70+)' : 'Ingresar Personalizado' }}
+                                <button @click="toggleCustomModelMode" class="text-[11px] text-emerald-400 hover:text-emerald-300 cursor-pointer">
+                                    {{ customModelMode ? '← Usar catálogo' : 'Modelo personalizado →' }}
                                 </button>
                             </div>
 
-                            <!-- Catalog Selector -->
-                            <div v-show="!customModelMode" class="space-y-3">
-                                <select 
-                                    v-model="customParams.modelName" 
-                                    class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-800"
-                                    @change="onModelSelectChange"
-                                >
-                                    <optgroup label="Modelos Gemma (Google)">
-                                        <option v-for="m in filteredModels('gemma')" :key="m.value" :value="m.value">
-                                            {{ m.label }} • {{ m.size }}
-                                        </option>
+                            <div v-show="!customModelMode">
+                                <select v-model="customParams.selectedModelValue" @change="onModelSelectChange"
+                                    class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-zinc-700">
+                                    <optgroup label="── Gemma (Google)">
+                                        <option v-for="m in filteredModels('gemma')" :key="m.value" :value="m.value">{{ m.label }} • {{ m.size }}</option>
                                     </optgroup>
-                                    <optgroup label="Modelos DeepSeek">
-                                        <option v-for="m in filteredModels('deepseek')" :key="m.value" :value="m.value">
-                                            {{ m.label }} • {{ m.size }}
-                                        </option>
+                                    <optgroup label="── DeepSeek">
+                                        <option v-for="m in filteredModels('deepseek')" :key="m.value" :value="m.value">{{ m.label }} • {{ m.size }}</option>
                                     </optgroup>
-                                    <optgroup label="Modelos Qwen (Alibaba)">
-                                        <option v-for="m in filteredModels('qwen')" :key="m.value" :value="m.value">
-                                            {{ m.label }} • {{ m.size }}
-                                        </option>
+                                    <optgroup label="── Qwen (Alibaba)">
+                                        <option v-for="m in filteredModels('qwen')" :key="m.value" :value="m.value">{{ m.label }} • {{ m.size }}</option>
                                     </optgroup>
-                                    <optgroup label="Modelos Meta Llama">
-                                        <option v-for="m in filteredModels('llama')" :key="m.value" :value="m.value">
-                                            {{ m.label }} • {{ m.size }}
-                                        </option>
+                                    <optgroup label="── Meta Llama">
+                                        <option v-for="m in filteredModels('llama')" :key="m.value" :value="m.value">{{ m.label }} • {{ m.size }}</option>
                                     </optgroup>
-                                    <optgroup label="Otros Modelos Destacados GGUF">
-                                        <option v-for="m in filteredModels('other')" :key="m.value" :value="m.value">
-                                            {{ m.label }} • {{ m.size }}
-                                        </option>
+                                    <optgroup label="── Otros modelos">
+                                        <option v-for="m in filteredModels('other')" :key="m.value" :value="m.value">{{ m.label }} • {{ m.size }}</option>
                                     </optgroup>
                                 </select>
+                                <div v-if="activeModel" class="mt-2 flex items-center gap-2 px-3 py-2 bg-zinc-950/50 border border-zinc-900 rounded-lg text-[11px]">
+                                    <i data-lucide="git-branch" class="w-3 h-3 text-zinc-500 shrink-0"></i>
+                                    <span class="text-zinc-500">HF Repo:</span>
+                                    <span class="font-mono text-emerald-400 truncate">{{ activeModel.repo }}</span>
+                                    <span class="ml-auto text-zinc-600 shrink-0">{{ activeModel.size }}</span>
+                                </div>
                             </div>
 
-                            <!-- Custom Model Mode -->
                             <div v-show="customModelMode" class="space-y-3 bg-zinc-950/40 p-4 border border-zinc-900 rounded-lg">
                                 <div class="space-y-2">
-                                    <label class="text-xs text-zinc-300 block">Repositorio en Hugging Face (Ej: <span class="font-mono text-zinc-500">Qwen/Qwen2.5-Coder-14B-Instruct-GGUF</span>)</label>
-                                    <input 
-                                        type="text" 
-                                        v-model="customModelRepo" 
-                                        placeholder="Repo/Nombre-Modelo-GGUF" 
-                                        class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-zinc-800"
-                                    >
+                                    <label class="text-xs text-zinc-400">Repositorio HF <span class="text-zinc-600">(ej: Qwen/Qwen2.5-Coder-14B-Instruct-GGUF)</span></label>
+                                    <input type="text" v-model="customModelRepo" placeholder="Owner/Repo-Name-GGUF"
+                                        class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-zinc-700">
                                 </div>
                                 <div class="space-y-2">
-                                    <label class="text-xs text-zinc-300 block">Nombre exacto del archivo GGUF (Ej: <span class="font-mono text-zinc-500">qwen2.5-coder-14b-instruct-q4_k_m.gguf</span>)</label>
-                                    <input 
-                                        type="text" 
-                                        v-model="customModelFile" 
-                                        placeholder="archivo-modelo.gguf" 
-                                        class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-zinc-800"
-                                    >
+                                    <label class="text-xs text-zinc-400">Archivo GGUF exacto <span class="text-zinc-600">(ej: qwen2.5-coder-14b-instruct-q4_k_m.gguf)</span></label>
+                                    <input type="text" v-model="customModelFile" placeholder="modelo.gguf"
+                                        class="w-full bg-zinc-950 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono focus:outline-none focus:border-zinc-700">
                                 </div>
-
-                                <div class="flex items-center space-x-3 pt-1">
-                                    <button 
-                                        @click="verifyHuggingFaceModel" 
-                                        class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-lg transition-all flex items-center space-x-2 cursor-pointer"
-                                        :disabled="verifyingModel"
-                                    >
-                                        <i data-lucide="search" :class="['w-3.5 h-3.5', verifyingModel ? 'animate-spin' : '']"></i>
-                                        <span>{{ verifyingModel ? 'Verificando...' : 'Verificar Existencia en HF' }}</span>
+                                <div class="flex items-center gap-3">
+                                    <button @click="verifyHuggingFaceModel" :disabled="verifyingModel"
+                                        class="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-lg flex items-center gap-2 cursor-pointer">
+                                        <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                                        {{ verifyingModel ? 'Verificando...' : 'Verificar en HF' }}
                                     </button>
-                                    
-                                    <!-- Badges -->
-                                    <span v-if="verificationStatus === 'success'" class="px-2.5 py-1 text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center space-x-1">
-                                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
-                                        <span>Verificado y Disponible</span>
+                                    <span v-if="verificationStatus === 'success'" class="text-[11px] text-emerald-400 flex items-center gap-1">
+                                        <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Disponible
                                     </span>
-                                    <span v-if="verificationStatus === 'failed'" class="px-2.5 py-1 text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-full flex items-center space-x-1">
-                                        <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
-                                        <span>No Encontrado en HF</span>
+                                    <span v-if="verificationStatus === 'failed'" class="text-[11px] text-rose-400 flex items-center gap-1">
+                                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> No encontrado
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Ports and Subnets -->
+                        <!-- Network -->
                         <div class="space-y-4 pt-2">
                             <h3 class="text-xs font-bold text-zinc-400 tracking-wider uppercase flex items-center gap-1.5">
-                                <i data-lucide="network" class="w-3.5 h-3.5 text-zinc-400"></i>
-                                <span>3. Red y Puertos</span>
+                                <i data-lucide="network" class="w-3.5 h-3.5"></i> 3. Red y Puertos
                             </h3>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-2 gap-4">
                                 <div class="space-y-1.5">
-                                    <label class="text-xs font-medium text-zinc-300">Puerto llama.cpp (API)</label>
-                                    <input 
-                                        type="number" 
-                                        v-model="customParams.llamaPort" 
-                                        placeholder="3000" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: 3000</span>
+                                    <label class="text-xs font-medium text-zinc-300">Puerto llama.cpp</label>
+                                    <input type="number" v-model="customParams.llamaPort" placeholder="3000"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">API OpenAI-compatible</span>
                                 </div>
-
                                 <div class="space-y-1.5">
                                     <label class="text-xs font-medium text-zinc-300">Puerto Open WebUI</label>
-                                    <input 
-                                        type="number" 
-                                        v-model="customParams.webuiPort" 
-                                        placeholder="8080" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: 8080</span>
+                                    <input type="number" v-model="customParams.webuiPort" placeholder="8080"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">Interfaz web principal</span>
                                 </div>
-
-                                <div class="space-y-1.5 sm:col-span-2">
-                                    <label class="text-xs font-medium text-zinc-300">Subredes Permitidas en UFW/Firewall</label>
-                                    <input 
-                                        type="text" 
-                                        v-model="customParams.allowedSubnets" 
-                                        placeholder="192.168.1.0/24, 192.168.68.0/24" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 font-mono text-xs placeholder-zinc-700"
-                                    >
+                                <div class="space-y-1.5 col-span-2">
+                                    <label class="text-xs font-medium text-zinc-300">
+                                        Subredes permitidas
+                                        <span :class="['ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded', customParams.distro === 'fedora' ? 'text-blue-400 bg-blue-500/10' : 'text-orange-400 bg-orange-500/10']">
+                                            {{ customParams.distro === 'fedora' ? 'firewalld rich-rules' : 'UFW allow from' }}
+                                        </span>
+                                    </label>
+                                    <input type="text" v-model="customParams.allowedSubnets" placeholder="192.168.1.0/24, 192.168.68.0/24"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono text-xs focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
                                 </div>
-
-                                <div class="space-y-1.5 sm:col-span-2">
-                                    <label class="text-xs font-medium text-zinc-300">Directorio de Instalación</label>
-                                    <input 
-                                        type="text" 
-                                        v-model="customParams.installDir" 
-                                        placeholder="$HOME/ai-stack" 
-                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-800 font-mono text-xs placeholder-zinc-700"
-                                    >
-                                    <span class="text-[10px] text-zinc-500 block">Default: Carpeta del usuario que lo ejecuta ($HOME/ai-stack)</span>
+                                <div class="space-y-1.5 col-span-2">
+                                    <label class="text-xs font-medium text-zinc-300">Directorio de instalación</label>
+                                    <input type="text" v-model="customParams.installDir" placeholder="$HOME/ai-stack"
+                                        class="w-full bg-zinc-950/60 border border-zinc-900 rounded-lg px-3 py-2 text-sm text-white font-mono text-xs focus:outline-none focus:border-zinc-700 placeholder-zinc-700">
+                                    <span class="text-[10px] text-zinc-600">Vacío = $HOME/ai-stack del usuario que ejecuta sudo</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Generate Buttons -->
-                        <div class="pt-4 border-t border-zinc-900 flex flex-col sm:flex-row gap-3">
-                            <button 
-                                @click="openScriptModal" 
-                                class="flex-grow px-5 py-3 bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-sm rounded-lg transition-all flex items-center justify-center space-x-2 cursor-pointer active:scale-98"
-                            >
-                                <i data-lucide="terminal" class="w-4 h-4"></i>
-                                <span>Generar Script Completo</span>
+                        <!-- Actions -->
+                        <div class="pt-4 border-t border-zinc-900 flex gap-3">
+                            <button @click="openScriptModal"
+                                class="flex-grow px-5 py-3 bg-white hover:bg-zinc-100 text-zinc-900 font-bold text-sm rounded-lg flex items-center justify-center gap-2 cursor-pointer">
+                                <i data-lucide="terminal" class="w-4 h-4"></i> Generar Script
                             </button>
-                            
-                            <button 
-                                @click="downloadScript" 
-                                class="px-5 py-3 bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 font-semibold text-sm rounded-lg transition-all flex items-center justify-center space-x-2 cursor-pointer"
-                            >
-                                <i data-lucide="download" class="w-4 h-4"></i>
-                                <span>Descargar .sh</span>
+                            <button @click="downloadScript"
+                                class="px-5 py-3 bg-zinc-900 hover:bg-zinc-800 text-white border border-zinc-800 font-semibold text-sm rounded-lg flex items-center gap-2 cursor-pointer">
+                                <i data-lucide="download" class="w-4 h-4"></i> .sh
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Right Column: Flowchart (5 cols) -->
+                <!-- Right: Topology -->
                 <div class="lg:col-span-5 space-y-6">
-                    <div class="bg-[#0b0f19] border border-zinc-900 rounded-xl p-6 space-y-6">
+                    <div class="bg-[#0b0f19] border border-zinc-900 rounded-xl p-6 space-y-5">
                         <div class="border-b border-zinc-900 pb-4">
-                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Flujo de Tránsito (Podman)</h2>
-                            <p class="text-xs text-zinc-400 mt-0.5">Topología e interconexión de componentes locales.</p>
+                            <h2 class="text-sm font-bold text-white uppercase tracking-wider">Topología del Stack</h2>
+                            <p class="text-xs text-zinc-400 mt-0.5">Flujo de red e interconexión de contenedores.</p>
                         </div>
 
-                        <!-- Professional Flowchart Vector/CSS -->
-                        <div class="space-y-4 py-2">
-                            <!-- Origin Node -->
+                        <!-- Topology nodes -->
+                        <div class="space-y-3 text-xs">
+                            <!-- Subnets -->
                             <div class="flex items-center justify-between p-3 bg-zinc-950/50 border border-zinc-900 rounded-lg">
-                                <div class="flex items-center space-x-2">
-                                    <div class="w-2 h-2 bg-emerald-400 rounded-full"></div>
-                                    <span class="text-xs font-semibold text-white">Subredes IP Permitidas</span>
+                                <div class="flex items-center gap-2">
+                                    <div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                                    <span class="font-semibold text-white">Subredes permitidas</span>
                                 </div>
-                                <span class="text-[10px] font-mono text-zinc-500">{{ customParams.allowedSubnets || '192.168.1.0/24' }}</span>
+                                <span class="font-mono text-zinc-500 text-[10px] truncate max-w-32">{{ customParams.allowedSubnets || '192.168.1.0/24' }}</span>
                             </div>
+                            <div class="flex justify-center"><div class="h-4 w-px bg-zinc-800"></div></div>
 
-                            <!-- Flow connector -->
-                            <div class="flex justify-center">
-                                <div class="h-4 w-0.5 bg-zinc-800"></div>
-                            </div>
-
-                            <!-- UFW / Firewall Node -->
-                            <div class="p-3 bg-zinc-950/50 border border-zinc-900 rounded-lg space-y-2">
-                                <div class="flex items-center justify-between">
-                                    <span class="text-xs font-semibold text-white flex items-center gap-1">
-                                        <i data-lucide="shield-alert" class="w-3.5 h-3.5 text-rose-400"></i>
-                                        <span>Filtro de Tráfico Activo</span>
-                                    </span>
-                                    <span class="px-2 py-0.5 text-[9px] bg-rose-500/10 text-rose-400 rounded">UFW</span>
+                            <!-- Firewall -->
+                            <div class="p-3 bg-zinc-950/50 border border-zinc-900 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="shield" class="w-3.5 h-3.5 text-rose-400"></i>
+                                    <span class="font-semibold text-white">Firewall</span>
                                 </div>
-                                <p class="text-[10px] text-zinc-500 leading-relaxed">Bloqueo de accesos externos que no pertenezcan a los rangos configurados.</p>
+                                <span :class="['text-[9px] font-mono px-2 py-0.5 rounded border', customParams.distro === 'fedora' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20']">
+                                    {{ customParams.distro === 'fedora' ? 'firewalld' : 'UFW' }}
+                                </span>
                             </div>
+                            <div class="flex justify-center"><div class="h-4 w-px bg-zinc-800"></div></div>
 
-                            <!-- Flow connector -->
-                            <div class="flex justify-center">
-                                <div class="h-4 w-0.5 bg-zinc-800"></div>
-                            </div>
-
-                            <!-- Podman Compose Isolated Network -->
+                            <!-- Podman network -->
                             <div class="p-4 bg-zinc-950/50 border border-zinc-900 rounded-lg space-y-3">
                                 <div class="flex items-center justify-between border-b border-zinc-900 pb-2">
-                                    <span class="text-xs font-bold text-white flex items-center gap-1">
+                                    <span class="font-bold text-white flex items-center gap-1.5">
                                         <i data-lucide="container" class="w-3.5 h-3.5 text-purple-400"></i>
-                                        <span>Red Aislada de Podman (ai-net)</span>
+                                        Red Podman (ai-net)
                                     </span>
-                                    <span class="text-[9px] font-mono text-purple-400">Compose</span>
+                                    <span class="text-[9px] font-mono text-purple-400">podman compose</span>
                                 </div>
-                                
                                 <div class="space-y-2">
-                                    <div class="flex justify-between items-center text-xs">
-                                        <span class="text-zinc-300">llama-cpp (CUDA)</span>
-                                        <span class="font-mono text-zinc-500">Puerto {{ customParams.llamaPort || 3000 }}</span>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-zinc-300 flex items-center gap-1.5"><i data-lucide="zap" class="w-3 h-3 text-amber-400"></i> llama-cpp</span>
+                                        <span class="font-mono text-zinc-500">:{{ customParams.llamaPort || 3000 }}</span>
                                     </div>
-                                    <div class="flex justify-between items-center text-xs">
-                                        <span class="text-zinc-300">open-webui</span>
-                                        <span class="font-mono text-zinc-500">Puerto {{ customParams.webuiPort || 8080 }}</span>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-zinc-300 flex items-center gap-1.5"><i data-lucide="layout-dashboard" class="w-3 h-3 text-blue-400"></i> open-webui</span>
+                                        <span class="font-mono text-zinc-500">:{{ customParams.webuiPort || 8080 }}</span>
                                     </div>
-                                    <div class="flex justify-between items-center text-xs">
-                                        <span class="text-zinc-300">searxng (JSON)</span>
-                                        <span class="font-mono text-zinc-500">Interno (8080)</span>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-zinc-300 flex items-center gap-1.5"><i data-lucide="search" class="w-3 h-3 text-emerald-400"></i> searxng</span>
+                                        <span class="font-mono text-zinc-500">:8080 (interno)</span>
                                     </div>
                                 </div>
                             </div>
+                            <div class="flex justify-center"><div class="h-4 w-px bg-zinc-800"></div></div>
 
-                            <!-- Flow connector -->
-                            <div class="flex justify-center">
-                                <div class="h-4 w-0.5 bg-zinc-800"></div>
-                            </div>
-
-                            <!-- Hardware Offload -->
+                            <!-- GPU -->
                             <div class="p-3 bg-zinc-950/50 border border-zinc-900 rounded-lg flex items-center justify-between">
-                                <div class="flex items-center space-x-2">
+                                <div class="flex items-center gap-2">
                                     <i data-lucide="zap" class="w-4 h-4 text-amber-400"></i>
-                                    <span class="text-xs font-semibold text-white">Capas de GPU Offload Calculadas</span>
+                                    <span class="font-semibold text-white">GPU Offload (CDI)</span>
                                 </div>
-                                <span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded text-xs font-mono font-bold">{{ calculatedLayers }} capas</span>
+                                <span class="px-2.5 py-1 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded font-mono font-bold text-[11px]">
+                                    {{ calculatedLayers === -1 ? 'Todas (-1)' : calculatedLayers + ' capas' }}
+                                </span>
+                            </div>
+
+                            <!-- OpenCode -->
+                            <div class="flex justify-center"><div class="h-4 w-px bg-zinc-800"></div></div>
+                            <div class="p-3 bg-zinc-950/50 border border-zinc-900 rounded-lg flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="code-2" class="w-4 h-4 text-purple-400"></i>
+                                    <span class="font-semibold text-white">OpenCode</span>
+                                    <span class="text-[10px] text-zinc-500">(host, apunta al stack)</span>
+                                </div>
+                                <span class="font-mono text-zinc-500 text-[10px]">localhost:{{ customParams.llamaPort || 3000 }}</span>
                             </div>
                         </div>
 
-                        <!-- Systemd Notice -->
-                        <div class="p-4 bg-zinc-950/20 border border-zinc-900 rounded-lg">
-                            <div class="flex items-start space-x-2">
-                                <i data-lucide="info" class="w-4 h-4 text-zinc-400 mt-0.5"></i>
-                                <div class="space-y-1">
-                                    <h4 class="text-xs font-bold text-white">Políticas de Control del Servicio</h4>
-                                    <p class="text-[11px] text-zinc-500 leading-relaxed">
-                                        Para mayor seguridad y optimización de memoria, el script de Podman se integra con systemd pero **no estará habilitado en el arranque automático**.
-                                    </p>
-                                </div>
-                            </div>
+                        <div class="p-3 bg-zinc-950/30 border border-zinc-900 rounded-lg flex items-start gap-2">
+                            <i data-lucide="info" class="w-4 h-4 text-zinc-500 mt-0.5 shrink-0"></i>
+                            <p class="text-[11px] text-zinc-500 leading-relaxed">El servicio systemd se crea sin habilitar en el arranque. OpenCode se instala en el host y se configura apuntando a la API del stack local.</p>
                         </div>
                     </div>
                 </div>
-
             </div>
+        </section>
+    </main>
 
-        </main>
-
-        <!-- New Modal Window / Globo para visualización del script -->
-        <div v-show="isModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-all" @click.self="closeScriptModal">
-            <div class="bg-[#0b0f19] border border-zinc-900 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                
-                <!-- Modal Header -->
-                <div class="bg-zinc-950 px-6 py-4 border-b border-zinc-900 flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <span :class="['px-2 py-0.5 text-[10px] font-bold rounded uppercase', customParams.distro === 'ubuntu' ? 'bg-orange-600/10 text-orange-400 border border-orange-500/20' : 'bg-blue-600/10 text-blue-400 border border-blue-500/20']">
-                            {{ customParams.distro }}
-                        </span>
-                        <h3 class="text-xs font-mono text-zinc-200">setup_ai_stack.sh (Podman Engine)</h3>
-                    </div>
-                    
-                    <div class="flex items-center space-x-2">
-                        <button 
-                            @click="copyScript" 
-                            class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded transition-all flex items-center space-x-1.5 cursor-pointer active:scale-95"
-                        >
-                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-                            <span>Copiar</span>
-                        </button>
-                        <button 
-                            @click="downloadScript" 
-                            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded transition-all flex items-center space-x-1.5 cursor-pointer active:scale-95"
-                        >
-                            <i data-lucide="download" class="w-3.5 h-3.5"></i>
-                            <span>Descargar .sh</span>
-                        </button>
-                        <button 
-                            @click="closeScriptModal" 
-                            class="p-1.5 hover:bg-zinc-800 rounded-lg text-zinc-400 hover:text-white transition-all cursor-pointer"
-                        >
-                            <i data-lucide="x" class="w-4.5 h-4.5"></i>
-                        </button>
-                    </div>
+    <!-- Modal -->
+    <div v-show="isModalOpen" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4" @click.self="closeScriptModal">
+        <div class="bg-[#0b0f19] border border-zinc-900 rounded-xl max-w-4xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="bg-zinc-950 px-6 py-4 border-b border-zinc-900 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <span :class="['px-2 py-0.5 text-[10px] font-bold rounded uppercase border', customParams.distro === 'ubuntu' ? 'bg-orange-600/10 text-orange-400 border-orange-500/20' : 'bg-blue-600/10 text-blue-400 border-blue-500/20']">
+                        {{ customParams.distro }}
+                    </span>
+                    <h3 class="text-xs font-mono text-zinc-300">setup_ai_stack.sh</h3>
                 </div>
-
-                <!-- Code Block -->
-                <div class="p-6 overflow-y-auto flex-1 code-font text-xs md:text-sm bg-[#080c14]">
-                    <pre><code class="language-bash" ref="scriptCodeBlock">{{ generatedScript }}</code></pre>
+                <div class="flex items-center gap-2">
+                    <button @click="copyScript" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="copy" class="w-3.5 h-3.5"></i> Copiar
+                    </button>
+                    <button @click="downloadScript" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded flex items-center gap-1.5 cursor-pointer">
+                        <i data-lucide="download" class="w-3.5 h-3.5"></i> Descargar .sh
+                    </button>
+                    <button @click="closeScriptModal" class="p-1.5 hover:bg-zinc-800 rounded text-zinc-400 hover:text-white cursor-pointer">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
                 </div>
-
-                <!-- Footer info -->
-                <div class="bg-zinc-950 px-6 py-3 border-t border-zinc-900 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
-                    <span>Modo Interactivo (Paso a Paso o Automático)</span>
-                    <span>100% Idempotente con Podman</span>
-                </div>
+            </div>
+            <div class="p-6 overflow-y-auto flex-1 code-font text-xs bg-[#080c14]">
+                <pre><code class="language-bash" ref="scriptCodeBlock">{{ generatedScript }}</code></pre>
+            </div>
+            <div class="bg-zinc-950 px-6 py-3 border-t border-zinc-900 flex items-center justify-between text-[11px] text-zinc-600 font-mono">
+                <span>Modo interactivo (paso a paso) o automático disponible</span>
+                <span>100% Idempotente · Podman nativo</span>
             </div>
         </div>
-
-        <!-- Toast Notifications -->
-        <div v-show="toastMessage" class="fixed bottom-6 right-6 z-50 flex items-center space-x-3 bg-zinc-900 border border-zinc-800 text-white px-5 py-3 rounded-xl shadow-2xl transition-all">
-            <div class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
-                <i data-lucide="check" class="w-4 h-4"></i>
-            </div>
-            <span class="text-xs font-semibold">{{ toastMessage }}</span>
-        </div>
-
-        <!-- Minimal Footer -->
-        <footer class="border-t border-zinc-900 bg-[#0b0f19] py-6 px-6 text-center text-xs text-zinc-500 mt-12">
-            <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                <span>DevOps AI Stack - Diseñado con precisión para Linux</span>
-                <span>Exclusivo para Podman Engine & Podman Compose</span>
-                <span class="font-mono text-zinc-700">set -euo pipefail</span>
-            </div>
-        </footer>
-
     </div>
 
-    <!-- Vue Implementation -->
-    <script>
-        const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+    <!-- Toast -->
+    <div v-show="toastMessage" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 bg-zinc-900 border border-zinc-800 text-white px-5 py-3 rounded-xl shadow-2xl">
+        <div class="p-1.5 bg-emerald-500/10 text-emerald-400 rounded border border-emerald-500/20">
+            <i data-lucide="check" class="w-4 h-4"></i>
+        </div>
+        <span class="text-xs font-semibold">{{ toastMessage }}</span>
+    </div>
 
-        createApp({
-            setup() {
-                const toastMessage = ref('');
-                const isModalOpen = ref(false);
-                const customModelMode = ref(false);
-                const verifyingModel = ref(false);
-                const verificationStatus = ref(''); // '', 'success', 'failed'
-                const scriptCodeBlock = ref(null);
+    <!-- Footer -->
+    <footer class="border-t border-zinc-900 bg-[#0b0f19] py-5 px-6 mt-10">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3 text-xs text-zinc-500">
+            <span>AI Stack Deployer — DevOps Linux Automation</span>
+            <span>Podman · llama.cpp · Open WebUI · SearXNG · OpenCode</span>
+            <a href="https://github.com" target="_blank" class="flex items-center gap-1.5 hover:text-zinc-300 transition-colors">
+                <i data-lucide="github" class="w-3.5 h-3.5"></i> Ver en GitHub
+            </a>
+        </div>
+    </footer>
+</div>
+<script>
+const { createApp, ref, computed, watch, nextTick, onMounted } = Vue;
+createApp({
+    setup() {
+        const toastMessage      = ref('');
+        const isModalOpen       = ref(false);
+        const customModelMode   = ref(false);
+        const verifyingModel    = ref(false);
+        const verificationStatus = ref('');
+        const scriptCodeBlock   = ref(null);
+        const customModelRepo   = ref('Qwen/Qwen2.5-Coder-14B-Instruct-GGUF');
+        const customModelFile   = ref('qwen2.5-coder-14b-instruct-q4_k_m.gguf');
 
-                const customModelRepo = ref('Qwen/Qwen2.5-Coder-14B-Instruct-GGUF');
-                const customModelFile = ref('qwen2.5-coder-14b-instruct-q4_k_m.gguf');
+        const customParams = ref({
+            distro: 'ubuntu',
+            cpuThreads: '',
+            ram: '',
+            vram: '',
+            selectedModelValue: 'qwen2.5-coder-14b-instruct-q4_k_m.gguf',
+            llamaPort: '',
+            webuiPort: '',
+            allowedSubnets: '',
+            installDir: ''
+        });
 
-                // Parameters matching requirements
-                const customParams = ref({
-                    distro: 'ubuntu',
-                    cpuThreads: '',
-                    ram: '',
-                    vram: '',
-                    modelName: 'qwen2.5-coder-14b-instruct-q4_k_m.gguf',
-                    llamaPort: '',
-                    webuiPort: '',
-                    allowedSubnets: '',
-                    installDir: ''
-                });
+        // Catálogo con repo HF explícito por cada entrada
+        const modelsCatalog = ref([
+            // QWEN CODER
+            { label:'Qwen2.5-Coder-1.5B-Instruct (Q8_0)',  value:'qwen2.5-coder-1.5b-instruct-q8_0.gguf',  brand:'qwen', size:'1.7 GB',  paramSize:1.5,  repo:'Qwen/Qwen2.5-Coder-1.5B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-3B-Instruct (Q8_0)',    value:'qwen2.5-coder-3b-instruct-q8_0.gguf',    brand:'qwen', size:'3.4 GB',  paramSize:3,    repo:'Qwen/Qwen2.5-Coder-3B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-7B-Instruct (Q4_K_M)',  value:'qwen2.5-coder-7b-instruct-q4_k_m.gguf',  brand:'qwen', size:'4.8 GB',  paramSize:7,    repo:'Qwen/Qwen2.5-Coder-7B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-7B-Instruct (Q8_0)',    value:'qwen2.5-coder-7b-instruct-q8_0.gguf',    brand:'qwen', size:'7.7 GB',  paramSize:7,    repo:'Qwen/Qwen2.5-Coder-7B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-14B-Instruct (Q4_K_M)', value:'qwen2.5-coder-14b-instruct-q4_k_m.gguf', brand:'qwen', size:'9.0 GB',  paramSize:14,   repo:'Qwen/Qwen2.5-Coder-14B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-14B-Instruct (Q5_K_M)', value:'qwen2.5-coder-14b-instruct-q5_k_m.gguf', brand:'qwen', size:'10.3 GB', paramSize:14,   repo:'Qwen/Qwen2.5-Coder-14B-Instruct-GGUF' },
+            { label:'Qwen2.5-Coder-32B-Instruct (Q4_K_M)', value:'qwen2.5-coder-32b-instruct-q4_k_m.gguf', brand:'qwen', size:'20.0 GB', paramSize:32,   repo:'Qwen/Qwen2.5-Coder-32B-Instruct-GGUF' },
+            // QWEN INSTRUCT
+            { label:'Qwen2.5-0.5B-Instruct (Q8_0)',        value:'qwen2.5-0.5b-instruct-q8_0.gguf',        brand:'qwen', size:'0.6 GB',  paramSize:0.5,  repo:'Qwen/Qwen2.5-0.5B-Instruct-GGUF' },
+            { label:'Qwen2.5-3B-Instruct (Q8_0)',          value:'qwen2.5-3b-instruct-q8_0.gguf',          brand:'qwen', size:'3.4 GB',  paramSize:3,    repo:'Qwen/Qwen2.5-3B-Instruct-GGUF' },
+            { label:'Qwen2.5-7B-Instruct (Q4_K_M)',        value:'qwen2.5-7b-instruct-q4_k_m.gguf',        brand:'qwen', size:'4.8 GB',  paramSize:7,    repo:'Qwen/Qwen2.5-7B-Instruct-GGUF' },
+            { label:'Qwen2.5-7B-Instruct (Q8_0)',          value:'qwen2.5-7b-instruct-q8_0.gguf',          brand:'qwen', size:'7.7 GB',  paramSize:7,    repo:'Qwen/Qwen2.5-7B-Instruct-GGUF' },
+            { label:'Qwen2.5-14B-Instruct (Q4_K_M)',       value:'qwen2.5-14b-instruct-q4_k_m.gguf',       brand:'qwen', size:'9.0 GB',  paramSize:14,   repo:'Qwen/Qwen2.5-14B-Instruct-GGUF' },
+            { label:'Qwen2.5-32B-Instruct (Q4_K_M)',       value:'qwen2.5-32b-instruct-q4_k_m.gguf',       brand:'qwen', size:'20.0 GB', paramSize:32,   repo:'Qwen/Qwen2.5-32B-Instruct-GGUF' },
+            { label:'Qwen2.5-72B-Instruct (Q3_K_M)',       value:'qwen2.5-72b-instruct-q3_k_m.gguf',       brand:'qwen', size:'37.0 GB', paramSize:72,   repo:'Qwen/Qwen2.5-72B-Instruct-GGUF' },
+            { label:'Qwen2.5-Math-7B-Instruct (Q8_0)',     value:'qwen2.5-math-7b-instruct-q8_0.gguf',     brand:'qwen', size:'7.7 GB',  paramSize:7,    repo:'Qwen/Qwen2.5-Math-7B-Instruct-GGUF' },
+            // DEEPSEEK R1 Distill
+            { label:'DeepSeek-R1-Distill-Qwen-1.5B (Q8_0)',    value:'DeepSeek-R1-Distill-Qwen-1.5B-Q8_0.gguf',    brand:'deepseek', size:'1.7 GB',  paramSize:1.5, repo:'unsloth/DeepSeek-R1-Distill-Qwen-1.5B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Qwen-7B (Q4_K_M)',    value:'DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf',    brand:'deepseek', size:'4.8 GB',  paramSize:7,   repo:'unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Qwen-7B (Q8_0)',      value:'DeepSeek-R1-Distill-Qwen-7B-Q8_0.gguf',      brand:'deepseek', size:'7.7 GB',  paramSize:7,   repo:'unsloth/DeepSeek-R1-Distill-Qwen-7B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Llama-8B (Q4_K_M)',   value:'DeepSeek-R1-Distill-Llama-8B-Q4_K_M.gguf',   brand:'deepseek', size:'4.9 GB',  paramSize:8,   repo:'unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Llama-8B (Q8_0)',     value:'DeepSeek-R1-Distill-Llama-8B-Q8_0.gguf',     brand:'deepseek', size:'8.5 GB',  paramSize:8,   repo:'unsloth/DeepSeek-R1-Distill-Llama-8B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Qwen-14B (Q4_K_M)',   value:'DeepSeek-R1-Distill-Qwen-14B-Q4_K_M.gguf',   brand:'deepseek', size:'9.0 GB',  paramSize:14,  repo:'unsloth/DeepSeek-R1-Distill-Qwen-14B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Qwen-14B (Q5_K_M)',   value:'DeepSeek-R1-Distill-Qwen-14B-Q5_K_M.gguf',   brand:'deepseek', size:'10.3 GB', paramSize:14,  repo:'unsloth/DeepSeek-R1-Distill-Qwen-14B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Qwen-32B (Q4_K_M)',   value:'DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf',   brand:'deepseek', size:'20.0 GB', paramSize:32,  repo:'unsloth/DeepSeek-R1-Distill-Qwen-32B-GGUF' },
+            { label:'DeepSeek-R1-Distill-Llama-70B (Q3_K_M)',  value:'DeepSeek-R1-Distill-Llama-70B-Q3_K_M.gguf',  brand:'deepseek', size:'37.0 GB', paramSize:70,  repo:'unsloth/DeepSeek-R1-Distill-Llama-70B-GGUF' },
+            { label:'DeepSeek-Coder-6.7B-Instruct (Q5_K_M)',   value:'deepseek-coder-6.7b-instruct.Q5_K_M.gguf',   brand:'deepseek', size:'4.8 GB',  paramSize:6.7, repo:'TheBloke/deepseek-coder-6.7B-instruct-GGUF' },
+            { label:'DeepSeek-Coder-6.7B-Instruct (Q8_0)',     value:'deepseek-coder-6.7b-instruct.Q8_0.gguf',     brand:'deepseek', size:'7.2 GB',  paramSize:6.7, repo:'TheBloke/deepseek-coder-6.7B-instruct-GGUF' },
+            { label:'DeepSeek-Coder-1.3B-Instruct (Q8_0)',     value:'deepseek-coder-1.3b-instruct.Q8_0.gguf',     brand:'deepseek', size:'1.4 GB',  paramSize:1.3, repo:'TheBloke/deepseek-coder-1.3b-instruct-GGUF' },
+            // GEMMA
+            { label:'Gemma-2-2B-it (Q4_K_M)',   value:'gemma-2-2b-it-q4_k_m.gguf',   brand:'gemma', size:'1.6 GB',  paramSize:2,  repo:'bartowski/gemma-2-2b-it-GGUF' },
+            { label:'Gemma-2-2B-it (Q8_0)',      value:'gemma-2-2b-it-q8_0.gguf',      brand:'gemma', size:'2.6 GB',  paramSize:2,  repo:'bartowski/gemma-2-2b-it-GGUF' },
+            { label:'Gemma-2-9B-it (Q4_K_M)',    value:'gemma-2-9b-it-q4_k_m.gguf',    brand:'gemma', size:'5.5 GB',  paramSize:9,  repo:'bartowski/gemma-2-9b-it-GGUF' },
+            { label:'Gemma-2-9B-it (Q8_0)',      value:'gemma-2-9b-it-q8_0.gguf',      brand:'gemma', size:'9.5 GB',  paramSize:9,  repo:'bartowski/gemma-2-9b-it-GGUF' },
+            { label:'Gemma-2-27B-it (Q3_K_M)',   value:'gemma-2-27b-it-q3_k_m.gguf',   brand:'gemma', size:'15.2 GB', paramSize:27, repo:'bartowski/gemma-2-27b-it-GGUF' },
+            { label:'Gemma-2-27B-it (Q4_K_M)',   value:'gemma-2-27b-it-q4_k_m.gguf',   brand:'gemma', size:'18.2 GB', paramSize:27, repo:'bartowski/gemma-2-27b-it-GGUF' },
+            { label:'CodeGemma-7B-it (Q4_K_M)',  value:'codegemma-7b-it-q4_k_m.gguf',  brand:'gemma', size:'4.8 GB',  paramSize:7,  repo:'bartowski/codegemma-7b-it-GGUF' },
+            { label:'CodeGemma-2B (Q8_0)',        value:'codegemma-2b-q8_0.gguf',        brand:'gemma', size:'2.6 GB',  paramSize:2,  repo:'bartowski/codegemma-2b-GGUF' },
+            // META LLAMA
+            { label:'Llama-3.2-1B-Instruct (Q8_0)',   value:'Llama-3.2-1B-Instruct-Q8_0.gguf',   brand:'llama', size:'1.3 GB',  paramSize:1,  repo:'unsloth/Llama-3.2-1B-Instruct-GGUF' },
+            { label:'Llama-3.2-3B-Instruct (Q4_K_M)', value:'Llama-3.2-3B-Instruct-Q4_K_M.gguf', brand:'llama', size:'2.0 GB',  paramSize:3,  repo:'unsloth/Llama-3.2-3B-Instruct-GGUF' },
+            { label:'Llama-3.2-3B-Instruct (Q8_0)',   value:'Llama-3.2-3B-Instruct-Q8_0.gguf',   brand:'llama', size:'3.4 GB',  paramSize:3,  repo:'unsloth/Llama-3.2-3B-Instruct-GGUF' },
+            { label:'Llama-3.1-8B-Instruct (Q4_K_M)', value:'Llama-3.1-8B-Instruct-Q4_K_M.gguf', brand:'llama', size:'4.9 GB',  paramSize:8,  repo:'unsloth/Meta-Llama-3.1-8B-Instruct-GGUF' },
+            { label:'Llama-3.1-8B-Instruct (Q5_K_M)', value:'Llama-3.1-8B-Instruct-Q5_K_M.gguf', brand:'llama', size:'5.7 GB',  paramSize:8,  repo:'unsloth/Meta-Llama-3.1-8B-Instruct-GGUF' },
+            { label:'Llama-3.1-8B-Instruct (Q8_0)',   value:'Llama-3.1-8B-Instruct-Q8_0.gguf',   brand:'llama', size:'8.5 GB',  paramSize:8,  repo:'unsloth/Meta-Llama-3.1-8B-Instruct-GGUF' },
+            { label:'Llama-3.3-70B-Instruct (Q3_K_M)',value:'Llama-3.3-70B-Instruct-Q3_K_M.gguf', brand:'llama', size:'35.0 GB', paramSize:70, repo:'unsloth/Llama-3.3-70B-Instruct-GGUF' },
+            { label:'Llama-3.3-70B-Instruct (Q4_K_M)',value:'Llama-3.3-70B-Instruct-Q4_K_M.gguf', brand:'llama', size:'42.5 GB', paramSize:70, repo:'unsloth/Llama-3.3-70B-Instruct-GGUF' },
+            { label:'Meta-Llama-3-8B-Instruct (Q8_0)',value:'Meta-Llama-3-8B-Instruct-Q8_0.gguf', brand:'llama', size:'8.5 GB',  paramSize:8,  repo:'unsloth/Meta-Llama-3-8B-Instruct-GGUF' },
+            // OTROS
+            { label:'Mistral-7B-Instruct-v0.3 (Q4_K_M)',    value:'Mistral-7B-Instruct-v0.3-Q4_K_M.gguf',    brand:'other', size:'4.4 GB',  paramSize:7,    repo:'bartowski/Mistral-7B-Instruct-v0.3-GGUF' },
+            { label:'Mistral-7B-Instruct-v0.3 (Q8_0)',      value:'Mistral-7B-Instruct-v0.3-Q8_0.gguf',      brand:'other', size:'7.7 GB',  paramSize:7,    repo:'bartowski/Mistral-7B-Instruct-v0.3-GGUF' },
+            { label:'Mixtral-8x7B-Instruct-v0.1 (Q3_K_M)', value:'Mixtral-8x7B-Instruct-v0.1-Q3_K_M.gguf',  brand:'other', size:'20.3 GB', paramSize:45,   repo:'TheBloke/Mixtral-8x7B-Instruct-v0.1-GGUF' },
+            { label:'Phi-3.5-mini-instruct (Q4_K_M)',        value:'Phi-3.5-mini-instruct-Q4_K_M.gguf',        brand:'other', size:'2.4 GB',  paramSize:3.8,  repo:'bartowski/Phi-3.5-mini-instruct-GGUF' },
+            { label:'Phi-3.5-mini-instruct (Q8_0)',          value:'Phi-3.5-mini-instruct-Q8_0.gguf',          brand:'other', size:'4.1 GB',  paramSize:3.8,  repo:'bartowski/Phi-3.5-mini-instruct-GGUF' },
+            { label:'Phi-3-medium-128k-instruct (Q4_K_M)',   value:'Phi-3-medium-128k-instruct-Q4_K_M.gguf',   brand:'other', size:'7.9 GB',  paramSize:14,   repo:'bartowski/Phi-3-medium-128k-instruct-GGUF' },
+            { label:'Hermes-3-Llama-3.1-8B (Q8_0)',          value:'Hermes-3-Llama-3.1-8B.Q8_0.gguf',          brand:'other', size:'8.5 GB',  paramSize:8,    repo:'NousResearch/Hermes-3-Llama-3.1-8B-GGUF' },
+            { label:'Hermes-3-Llama-3.1-70B (Q4_K_M)',       value:'Hermes-3-Llama-3.1-70B.Q4_K_M.gguf',       brand:'other', size:'42.5 GB', paramSize:70,   repo:'NousResearch/Hermes-3-Llama-3.1-70B-GGUF' },
+            { label:'Nemotron-Mini-4B-Instruct (Q8_0)',       value:'Nemotron-Mini-4B-Instruct-Q8_0.gguf',       brand:'other', size:'4.1 GB',  paramSize:4,    repo:'bartowski/Nemotron-Mini-4B-Instruct-GGUF' },
+            { label:'Granite-3.0-8B-Instruct (Q8_0)',         value:'granite-3.0-8b-instruct-q8_0.gguf',         brand:'other', size:'8.5 GB',  paramSize:8,    repo:'bartowski/granite-3.0-8b-instruct-GGUF' },
+            { label:'Granite-3.0-2B-Instruct (Q8_0)',         value:'granite-3.0-2b-instruct-q8_0.gguf',         brand:'other', size:'2.2 GB',  paramSize:2,    repo:'bartowski/granite-3.0-2b-instruct-GGUF' },
+            { label:'SmolLM2-135M-Instruct (Q8_0)',           value:'smollm2-135m-instruct-q8_0.gguf',           brand:'other', size:'0.15 GB', paramSize:0.15, repo:'bartowski/SmolLM2-135M-Instruct-GGUF' },
+            { label:'SmolLM2-1.7B-Instruct (Q8_0)',           value:'smollm2-1.7b-instruct-q8_0.gguf',           brand:'other', size:'1.8 GB',  paramSize:1.7,  repo:'bartowski/SmolLM2-1.7B-Instruct-GGUF' },
+            { label:'Falcon3-7B-Instruct (Q8_0)',             value:'falcon3-7b-instruct-q8_0.gguf',             brand:'other', size:'7.7 GB',  paramSize:7,    repo:'bartowski/Falcon3-7B-Instruct-GGUF' },
+            { label:'OpenHermes-2.5-Mistral-7B (Q8_0)',       value:'openhermes-2.5-mistral-7b.Q8_0.gguf',       brand:'other', size:'7.7 GB',  paramSize:7,    repo:'TheBloke/OpenHermes-2.5-Mistral-7B-GGUF' },
+            { label:'TinyLlama-1.1B-Chat-v1.0 (Q8_0)',        value:'tinyllama-1.1b-chat-v1.0.Q8_0.gguf',        brand:'other', size:'1.2 GB',  paramSize:1.1,  repo:'TheBloke/TinyLlama-1.1B-Chat-v1.0-GGUF' },
+        ]);
 
-                // Catálogo de más de 70 modelos GGUF populares (Gemma, DeepSeek, Qwen, Meta Llama)
-                const modelsCatalog = ref([
-                    // QWEN
-                    { label: 'Qwen2.5-Coder-14B-Instruct (Q4_K_M)', value: 'qwen2.5-coder-14b-instruct-q4_k_m.gguf', brand: 'qwen', size: '9.0 GB', paramSize: 14 },
-                    { label: 'Qwen2.5-Coder-14B-Instruct (Q5_K_M)', value: 'qwen2.5-coder-14b-instruct-q5_k_m.gguf', brand: 'qwen', size: '10.3 GB', paramSize: 14 },
-                    { label: 'Qwen2.5-Coder-7B-Instruct (Q8_0)', value: 'qwen2.5-coder-7b-instruct-q8_0.gguf', brand: 'qwen', size: '7.7 GB', paramSize: 7 },
-                    { label: 'Qwen2.5-Coder-7B-Instruct (Q4_K_M)', value: 'qwen2.5-coder-7b-instruct-q4_k_m.gguf', brand: 'qwen', size: '4.8 GB', paramSize: 7 },
-                    { label: 'Qwen2.5-Coder-3B-Instruct (Q8_0)', value: 'qwen2.5-coder-3b-instruct-q8_0.gguf', brand: 'qwen', size: '3.4 GB', paramSize: 3 },
-                    { label: 'Qwen2.5-Coder-1.5B-Instruct (Q8_0)', value: 'qwen2.5-coder-1.5b-instruct-q8_0.gguf', brand: 'qwen', size: '1.7 GB', paramSize: 1.5 },
-                    { label: 'Qwen2.5-Coder-32B-Instruct (Q4_K_M)', value: 'qwen2.5-coder-32b-instruct-q4_k_m.gguf', brand: 'qwen', size: '20.0 GB', paramSize: 32 },
-                    { label: 'Qwen2.5-0.5B-Instruct (Q8_0)', value: 'qwen2.5-0.5b-instruct-q8_0.gguf', brand: 'qwen', size: '0.6 GB', paramSize: 0.5 },
-                    { label: 'Qwen2.5-1.5B-Instruct (Q8_0)', value: 'qwen2.5-1.5b-instruct-q8_0.gguf', brand: 'qwen', size: '1.7 GB', paramSize: 1.5 },
-                    { label: 'Qwen2.5-3B-Instruct (Q8_0)', value: 'qwen2.5-3b-instruct-q8_0.gguf', brand: 'qwen', size: '3.4 GB', paramSize: 3 },
-                    { label: 'Qwen2.5-7B-Instruct (Q4_K_M)', value: 'qwen2.5-7b-instruct-q4_k_m.gguf', brand: 'qwen', size: '4.8 GB', paramSize: 7 },
-                    { label: 'Qwen2.5-7B-Instruct (Q8_0)', value: 'qwen2.5-7b-instruct-q8_0.gguf', brand: 'qwen', size: '7.7 GB', paramSize: 7 },
-                    { label: 'Qwen2.5-14B-Instruct (Q4_K_M)', value: 'qwen2.5-14b-instruct-q4_k_m.gguf', brand: 'qwen', size: '9.0 GB', paramSize: 14 },
-                    { label: 'Qwen2.5-14B-Instruct (Q5_K_M)', value: 'qwen2.5-14b-instruct-q5_k_m.gguf', brand: 'qwen', size: '10.3 GB', paramSize: 14 },
-                    { label: 'Qwen2.5-32B-Instruct (Q4_K_M)', value: 'qwen2.5-32b-instruct-q4_k_m.gguf', brand: 'qwen', size: '20.0 GB', paramSize: 32 },
-                    { label: 'Qwen2.5-72B-Instruct (Q3_K_M)', value: 'qwen2.5-72b-instruct-q3_k_m.gguf', brand: 'qwen', size: '37.0 GB', paramSize: 72 },
-                    { label: 'Qwen2.5-Math-7B-Instruct (Q8_0)', value: 'qwen2.5-math-7b-instruct-q8_0.gguf', brand: 'qwen', size: '7.7 GB', paramSize: 7 },
+        const filteredModels = (brand) => modelsCatalog.value.filter(m => m.brand === brand);
 
-                    // DEEPSEEK
-                    { label: 'DeepSeek-R1-Distill-Qwen-1.5B (Q8_0)', value: 'DeepSeek-R1-Distill-Qwen-1.5B-Q8_0.gguf', brand: 'deepseek', size: '1.7 GB', paramSize: 1.5 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-7B (Q4_K_M)', value: 'DeepSeek-R1-Distill-Qwen-7B-Q4_K_M.gguf', brand: 'deepseek', size: '4.8 GB', paramSize: 7 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-7B (Q8_0)', value: 'DeepSeek-R1-Distill-Qwen-7B-Q8_0.gguf', brand: 'deepseek', size: '7.7 GB', paramSize: 7 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-8B (Q4_K_M)', value: 'DeepSeek-R1-Distill-Llama-8B-Q4_K_M.gguf', brand: 'deepseek', size: '4.9 GB', paramSize: 8 },
-                    { label: 'DeepSeek-R1-Distill-Llama-8B (Q8_0)', value: 'DeepSeek-R1-Distill-Llama-8B-Q8_0.gguf', brand: 'deepseek', size: '8.5 GB', paramSize: 8 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-14B (Q4_K_M)', value: 'DeepSeek-R1-Distill-Qwen-14B-Q4_K_M.gguf', brand: 'deepseek', size: '9.0 GB', paramSize: 14 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-14B (Q5_K_M)', value: 'DeepSeek-R1-Distill-Qwen-14B-Q5_K_M.gguf', brand: 'deepseek', size: '10.3 GB', paramSize: 14 },
-                    { label: 'DeepSeek-R1-Distill-Qwen-32B (Q4_K_M)', value: 'DeepSeek-R1-Distill-Qwen-32B-Q4_K_M.gguf', brand: 'deepseek', size: '20.0 GB', paramSize: 32 },
-                    { label: 'DeepSeek-R1-Distill-Llama-70B (Q3_K_M)', value: 'DeepSeek-R1-Distill-Llama-70B-Q3_K_M.gguf', brand: 'deepseek', size: '37.0 GB', paramSize: 70 },
-                    { label: 'DeepSeek-Coder-6.7B-Instruct (Q5_K_M)', value: 'deepseek-coder-6.7b-instruct.Q5_K_M.gguf', brand: 'deepseek', size: '4.8 GB', paramSize: 6.7 },
-                    { label: 'DeepSeek-Coder-6.7B-Instruct (Q8_0)', value: 'deepseek-coder-6.7b-instruct.Q8_0.gguf', brand: 'deepseek', size: '7.2 GB', paramSize: 6.7 },
-                    { label: 'DeepSeek-Coder-1.3B-Instruct (Q8_0)', value: 'deepseek-coder-1.3b-instruct.Q8_0.gguf', brand: 'deepseek', size: '1.4 GB', paramSize: 1.3 },
-                    { label: 'DeepSeek-V2.5-Lite-Instruct (Q4_K_M)', value: 'deepseek-v2.5-lite-instruct-q4_k_m.gguf', brand: 'deepseek', size: '16.0 GB', paramSize: 25 },
+        const activeModel = computed(() =>
+            customModelMode.value ? null : (modelsCatalog.value.find(m => m.value === customParams.value.selectedModelValue) || null)
+        );
 
-                    // GEMMA
-                    { label: 'Gemma-2-2B-it (Q4_K_M)', value: 'gemma-2-2b-it-q4_k_m.gguf', brand: 'gemma', size: '1.6 GB', paramSize: 2 },
-                    { label: 'Gemma-2-2B-it (Q8_0)', value: 'gemma-2-2b-it-q8_0.gguf', brand: 'gemma', size: '2.6 GB', paramSize: 2 },
-                    { label: 'Gemma-2-9B-it (Q4_K_M)', value: 'gemma-2-9b-it-q4_k_m.gguf', brand: 'gemma', size: '5.5 GB', paramSize: 9 },
-                    { label: 'Gemma-2-9B-it (Q8_0)', value: 'gemma-2-9b-it-q8_0.gguf', brand: 'gemma', size: '9.5 GB', paramSize: 9 },
-                    { label: 'Gemma-2-27B-it (Q3_K_M)', value: 'gemma-2-27b-it-q3_k_m.gguf', brand: 'gemma', size: '15.2 GB', paramSize: 27 },
-                    { label: 'Gemma-2-27B-it (Q4_K_M)', value: 'gemma-2-27b-it-q4_k_m.gguf', brand: 'gemma', size: '18.2 GB', paramSize: 27 },
-                    { label: 'CodeGemma-7B-it (Q4_K_M)', value: 'codegemma-7b-it-q4_k_m.gguf', brand: 'gemma', size: '4.8 GB', paramSize: 7 },
-                    { label: 'CodeGemma-2B (Q8_0)', value: 'codegemma-2b-q8_0.gguf', brand: 'gemma', size: '2.6 GB', paramSize: 2 },
+        const toggleCustomModelMode = () => { customModelMode.value = !customModelMode.value; verificationStatus.value = ''; };
 
-                    // META LLAMA
-                    { label: 'Llama-3.2-1B-Instruct (Q8_0)', value: 'Llama-3.2-1B-Instruct-Q8_0.gguf', brand: 'llama', size: '1.3 GB', paramSize: 1 },
-                    { label: 'Llama-3.2-3B-Instruct (Q4_K_M)', value: 'Llama-3.2-3B-Instruct-Q4_K_M.gguf', brand: 'llama', size: '2.0 GB', paramSize: 3 },
-                    { label: 'Llama-3.2-3B-Instruct (Q8_0)', value: 'Llama-3.2-3B-Instruct-Q8_0.gguf', brand: 'llama', size: '3.4 GB', paramSize: 3 },
-                    { label: 'Llama-3.1-8B-Instruct (Q4_K_M)', value: 'Llama-3.1-8B-Instruct-Q4_K_M.gguf', brand: 'llama', size: '4.9 GB', paramSize: 8 },
-                    { label: 'Llama-3.1-8B-Instruct (Q5_K_M)', value: 'Llama-3.1-8B-Instruct-Q5_K_M.gguf', brand: 'llama', size: '5.7 GB', paramSize: 8 },
-                    { label: 'Llama-3.1-8B-Instruct (Q8_0)', value: 'Llama-3.1-8B-Instruct-Q8_0.gguf', brand: 'llama', size: '8.5 GB', paramSize: 8 },
-                    { label: 'Llama-3.3-70B-Instruct (Q3_K_M)', value: 'Llama-3.3-70B-Instruct-Q3_K_M.gguf', brand: 'llama', size: '35.0 GB', paramSize: 70 },
-                    { label: 'Llama-3.3-70B-Instruct (Q4_K_M)', value: 'Llama-3.3-70B-Instruct-Q4_K_M.gguf', brand: 'llama', size: '42.5 GB', paramSize: 70 },
-                    { label: 'Meta-Llama-3-8B-Instruct (Q8_0)', value: 'Meta-Llama-3-8B-Instruct-Q8_0.gguf', brand: 'llama', size: '8.5 GB', paramSize: 8 },
-                    { label: 'Llama-3-Guard-3-8B (Q8_0)', value: 'Llama-3-Guard-3-8B-Q8_0.gguf', brand: 'llama', size: '8.5 GB', paramSize: 8 },
+        const verifyHuggingFaceModel = async () => {
+            if (!customModelRepo.value) { showToast('Ingresa el nombre del repositorio'); return; }
+            verifyingModel.value = true; verificationStatus.value = '';
+            try {
+                const res = await fetch(`https://huggingface.co/api/models/${customModelRepo.value}`);
+                verificationStatus.value = res.ok ? 'success' : 'failed';
+                if (res.ok) showToast('Modelo verificado en Hugging Face');
+            } catch { verificationStatus.value = 'failed'; }
+            finally { verifyingModel.value = false; }
+        };
 
-                    // OTHERS
-                    { label: 'Mistral-7B-Instruct-v0.3 (Q4_K_M)', value: 'Mistral-7B-Instruct-v0.3-Q4_K_M.gguf', brand: 'other', size: '4.4 GB', paramSize: 7 },
-                    { label: 'Mistral-7B-Instruct-v0.3 (Q8_0)', value: 'Mistral-7B-Instruct-v0.3-Q8_0.gguf', brand: 'other', size: '7.7 GB', paramSize: 7 },
-                    { label: 'Mixtral-8x7B-Instruct-v0.1 (Q3_K_M)', value: 'Mixtral-8x7B-Instruct-v0.1-Q3_K_M.gguf', brand: 'other', size: '20.3 GB', paramSize: 45 },
-                    { label: 'Phi-3.5-mini-instruct (Q4_K_M)', value: 'Phi-3.5-mini-instruct-Q4_K_M.gguf', brand: 'other', size: '2.4 GB', paramSize: 3.8 },
-                    { label: 'Phi-3.5-mini-instruct (Q8_0)', value: 'Phi-3.5-mini-instruct-Q8_0.gguf', brand: 'other', size: '4.1 GB', paramSize: 3.8 },
-                    { label: 'Phi-3-medium-128k-instruct (Q4_K_M)', value: 'Phi-3-medium-128k-instruct-Q4_K_M.gguf', brand: 'other', size: '7.9 GB', paramSize: 14 },
-                    { label: 'Aya-23-8B (Q4_K_M)', value: 'aya-23-8b-q4_k_m.gguf', brand: 'other', size: '4.9 GB', paramSize: 8 },
-                    { label: 'Command-R-Plus (Q3_K_M)', value: 'command-r-plus-q3_k_m.gguf', brand: 'other', size: '48.0 GB', paramSize: 104 },
-                    { label: 'Hermes-3-Llama-3.1-8B (Q8_0)', value: 'Hermes-3-Llama-3.1-8B.Q8_0.gguf', brand: 'other', size: '8.5 GB', paramSize: 8 },
-                    { label: 'Hermes-3-Llama-3.1-70B (Q4_K_M)', value: 'Hermes-3-Llama-3.1-70B.Q4_K_M.gguf', brand: 'other', size: '42.5 GB', paramSize: 70 },
-                    { label: 'Nemotron-Mini-4B-Instruct (Q8_0)', value: 'Nemotron-Mini-4B-Instruct-Q8_0.gguf', brand: 'other', size: '4.1 GB', paramSize: 4 },
-                    { label: 'Granite-3.0-8B-Instruct (Q8_0)', value: 'granite-3.0-8b-instruct-q8_0.gguf', brand: 'other', size: '8.5 GB', paramSize: 8 },
-                    { label: 'Granite-3.0-2B-Instruct (Q8_0)', value: 'granite-3.0-2b-instruct-q8_0.gguf', brand: 'other', size: '2.2 GB', paramSize: 2 },
-                    { label: 'Smollm2-135M-Instruct (Q8_0)', value: 'smollm2-135m-instruct-q8_0.gguf', brand: 'other', size: '0.15 GB', paramSize: 0.15 },
-                    { label: 'Smollm2-360M-Instruct (Q8_0)', value: 'smollm2-360m-instruct-q8_0.gguf', brand: 'other', size: '0.38 GB', paramSize: 0.38 },
-                    { label: 'Smollm2-1.7B-Instruct (Q8_0)', value: 'smollm2-1.7b-instruct-q8_0.gguf', brand: 'other', size: '1.8 GB', paramSize: 1.7 },
-                    { label: 'Falcon3-7B-Instruct (Q8_0)', value: 'falcon3-7b-instruct-q8_0.gguf', brand: 'other', size: '7.7 GB', paramSize: 7 },
-                    { label: 'Falcon3-1B-Instruct (Q8_0)', value: 'falcon3-1b-instruct-q8_0.gguf', brand: 'other', size: '1.2 GB', paramSize: 1.2 },
-                    { label: 'OpenHermes-2.5-Mistral-7B (Q8_0)', value: 'openhermes-2.5-mistral-7b.Q8_0.gguf', brand: 'other', size: '7.7 GB', paramSize: 7 },
-                    { label: 'TinyLlama-1.1B-Chat-v1.0 (Q8_0)', value: 'tinyllama-1.1b-chat-v1.0.Q8_0.gguf', brand: 'other', size: '1.2 GB', paramSize: 1.1 }
-                ]);
+        // Cálculo de capas GPU: -1 = offload total, N = parcial
+        const calculatedLayers = computed(() => {
+            const vram = Number(customParams.value.vram) || 12;
+            let pSize = 14, modelSizeGB = 9.0;
+            if (!customModelMode.value) {
+                const m = modelsCatalog.value.find(m => m.value === customParams.value.selectedModelValue);
+                if (m) { pSize = m.paramSize; modelSizeGB = parseFloat(m.size); }
+            }
+            if (vram - 1.5 >= modelSizeGB) return -1;
+            const totalLayers = pSize <= 3 ? 26 : pSize <= 9 ? 32 : pSize <= 14 ? 40 : pSize <= 32 ? 60 : 80;
+            return Math.max(1, Math.floor(totalLayers * (Math.max(vram - 1.5, 0) / modelSizeGB)));
+        });
 
-                // Filter helper
-                const filteredModels = (brand) => {
-                    return modelsCatalog.value.filter(m => m.brand === brand);
-                };
+        const onModelSelectChange = () => { verificationStatus.value = ''; };
+        const openScriptModal = () => {
+            isModalOpen.value = true;
+            nextTick(() => { if (scriptCodeBlock.value) { delete scriptCodeBlock.value.dataset.highlighted; hljs.highlightElement(scriptCodeBlock.value); } });
+        };
+        const closeScriptModal = () => { isModalOpen.value = false; };
+        const showToast = (msg) => { toastMessage.value = msg; setTimeout(() => { toastMessage.value = ''; }, 3500); };
+        const copyScript  = () => navigator.clipboard.writeText(generatedScript.value).then(() => showToast('Script copiado al portapapeles'));
+        const downloadScript = () => {
+            const a = Object.assign(document.createElement('a'), { href: URL.createObjectURL(new Blob([generatedScript.value], { type:'text/plain' })), download:'setup_ai_stack.sh' });
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            showToast('Descarga iniciada: setup_ai_stack.sh');
+        };
 
-                const toggleCustomModelMode = () => {
-                    customModelMode.value = !customModelMode.value;
-                    verificationStatus.value = '';
-                };
+        // ======================================================================
+        // GENERADOR DE SCRIPT BASH
+        // ======================================================================
+        const generatedScript = computed(() => {
+            const distro        = customParams.value.distro;
+            const cpu           = customParams.value.cpuThreads   || '6';
+            const ram           = customParams.value.ram           || '16';
+            const vram          = customParams.value.vram          || '12';
+            const llamaPort     = customParams.value.llamaPort     || '3000';
+            const webuiPort     = customParams.value.webuiPort     || '8080';
+            const rawSubnets    = customParams.value.allowedSubnets || '192.168.1.0/24,192.168.68.0/24';
+            const installDirInput = customParams.value.installDir.trim();
+            const installDirExpr  = installDirInput ? `"${installDirInput}"` : '"${TARGET_HOME}/ai-stack"';
 
-                // Real-time HF availability check
-                const verifyHuggingFaceModel = async () => {
-                    if (!customModelRepo.value) {
-                        showToast('Por favor, ingresa el nombre del repositorio');
-                        return;
-                    }
-                    verifyingModel.value = true;
-                    verificationStatus.value = '';
-                    try {
-                        const targetUrl = `https://huggingface.co/api/models/${customModelRepo.value}`;
-                        const res = await fetch(targetUrl);
-                        if (res.ok) {
-                            verificationStatus.value = 'success';
-                            showToast('¡Modelo verificado con éxito en Hugging Face!');
-                        } else {
-                            verificationStatus.value = 'failed';
-                        }
-                    } catch (e) {
-                        console.error(e);
-                        verificationStatus.value = 'failed';
-                    } finally {
-                        verifyingModel.value = false;
-                    }
-                };
+            // Resolver modelo y repo
+            let modelFileName, hfRepo;
+            if (customModelMode.value) {
+                hfRepo        = customModelRepo.value.trim()  || 'Qwen/Qwen2.5-Coder-14B-Instruct-GGUF';
+                modelFileName = customModelFile.value.trim()  || 'qwen2.5-coder-14b-instruct-q4_k_m.gguf';
+            } else {
+                const m   = modelsCatalog.value.find(m => m.value === customParams.value.selectedModelValue);
+                modelFileName = m ? m.value : 'qwen2.5-coder-14b-instruct-q4_k_m.gguf';
+                hfRepo        = m ? m.repo  : 'Qwen/Qwen2.5-Coder-14B-Instruct-GGUF';
+            }
+            const gpuLayers = calculatedLayers.value;
 
-                // Dynamic Layer Offload Calculation based on model param size and GPU VRAM
-                const calculatedLayers = computed(() => {
-                    const vram = Number(customParams.value.vram) || 12;
-                    // Find parameters of current model
-                    let pSize = 14; 
-                    if (customModelMode.value) {
-                        pSize = 14; // Default guess for custom models
-                    } else {
-                        const active = modelsCatalog.value.find(m => m.value === customParams.value.modelName);
-                        if (active) pSize = active.paramSize;
-                    }
-                    
-                    // Standard GGUF offload calculations:
-                    // 12GB VRAM can fit 100% of layers for <= 14B models (Q4/Q5).
-                    // Let's return layers accordingly. Max typical layers = 32 to 80.
-                    if (pSize <= 8) return 99; // Gemma 2B/9B, Llama 8B, Qwen 7B easily fit 100%
-                    if (pSize <= 14 && vram >= 10) return 99; // Qwen 14B fits in 12GB VRAM
-                    if (pSize > 30 && vram < 16) {
-                        // Large models (e.g. 70B) in 12GB VRAM: Partial offload
-                        return Math.floor((vram / (pSize * 0.7)) * 45); 
-                    }
-                    return 99;
-                });
+            // Subredes limpias
+            const subnetsList = rawSubnets.split(',').map(s => s.trim()).filter(Boolean);
 
-                const onModelSelectChange = () => {
-                    verificationStatus.value = '';
-                };
+            // ── Bloque firewall por distro ─────────────────────────────────────
+            let firewallBlock = '';
+            if (distro === 'ubuntu') {
+                // UFW
+                let ufwRules = '';
+                for (const s of subnetsList) {
+                    ufwRules += `    ufw allow from ${s} to any port ${webuiPort} proto tcp comment 'AI Stack WebUI' 2>/dev/null || true\n`;
+                    ufwRules += `    ufw allow from ${s} to any port ${llamaPort} proto tcp comment 'AI Stack llama.cpp' 2>/dev/null || true\n`;
+                }
+                firewallBlock = `    log_info "Configurando UFW (Ubuntu)..."
+    ufw default deny incoming  >/dev/null 2>&1 || true
+    ufw default allow outgoing >/dev/null 2>&1 || true
+    ufw allow ssh comment 'SSH' >/dev/null 2>&1 || true
 
-                const openScriptModal = () => {
-                    isModalOpen.value = true;
-                    nextTick(() => {
-                        if (scriptCodeBlock.value) {
-                            delete scriptCodeBlock.value.dataset.highlighted;
-                            hljs.highlightElement(scriptCodeBlock.value);
-                        }
-                    });
-                };
-
-                const closeScriptModal = () => {
-                    isModalOpen.value = false;
-                };
-
-                const showToast = (msg) => {
-                    toastMessage.value = msg;
-                    setTimeout(() => { toastMessage.value = ''; }, 4000);
-                };
-
-                const copyScript = () => {
-                    navigator.clipboard.writeText(generatedScript.value).then(() => {
-                        showToast('Script copiado al portapapeles');
-                    });
-                };
-
-                const downloadScript = () => {
-                    const blob = new Blob([generatedScript.value], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'setup_ai_stack.sh';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                    showToast('Descarga iniciada (setup_ai_stack.sh)');
-                };
-
-                // Dynamic Generation of the Podman-based script
-                const generatedScript = computed(() => {
-                    const distro = customParams.value.distro;
-                    const cpu = customParams.value.cpuThreads || '6';
-                    const ram = customParams.value.ram || '16';
-                    const vram = customParams.value.vram || '12';
-                    const llamaPort = customParams.value.llamaPort || '3000';
-                    const webuiPort = customParams.value.webuiPort || '8080';
-                    const allowedSubnets = customParams.value.allowedSubnets || '192.168.1.0/24, 192.168.68.0/24';
-                    
-                    // Directory base - When run as sudo, $HOME points to /root.
-                    // We use SUDO_USER's home to honor the user that invoked the script.
-                    const installDirInput = customParams.value.installDir.trim();
-                    const installDirExpr = installDirInput ? `"${installDirInput}"` : '"${TARGET_HOME}/ai-stack"';
-
-                    // Resolve model details
-                    let modelFileName = "";
-                    let hfRepo = "";
-
-                    if (customModelMode.value) {
-                        hfRepo = customModelRepo.value.trim() || "Qwen/Qwen2.5-Coder-14B-Instruct-GGUF";
-                        modelFileName = customModelFile.value.trim() || "qwen2.5-coder-14b-instruct-q4_k_m.gguf";
-                    } else {
-                        // Find model in catalog
-                        const match = modelsCatalog.value.find(m => m.value === customParams.value.modelName);
-                        modelFileName = match ? match.value : 'qwen2.5-coder-14b-instruct-q4_k_m.gguf';
-                        
-                        // Detect brand for repo matching
-                        if (modelFileName.includes('gemma')) {
-                            hfRepo = "google/gemma-2-9b-it-GGUF";
-                        } else if (modelFileName.includes('DeepSeek-R1')) {
-                            hfRepo = "unsloth/DeepSeek-R1-Distill-Qwen-14B-GGUF";
-                        } else if (modelFileName.includes('Llama-3.3')) {
-                            hfRepo = "unsloth/Llama-3.3-70B-Instruct-GGUF";
-                        } else if (modelFileName.includes('Llama-3.2')) {
-                            hfRepo = "unsloth/Llama-3.2-3B-Instruct-GGUF";
-                        } else {
-                            hfRepo = "Qwen/Qwen2.5-Coder-14B-Instruct-GGUF";
-                        }
-                    }
-
-                    // Build Subnets list for UFW
-                    const subnetsList = allowedSubnets.split(',').map(s => s.trim()).filter(Boolean);
-                    let ufwRulesBlock = '';
-                    subnetsList.forEach(subnet => {
-                        ufwRulesBlock += `        ufw allow from ${subnet} to any port ${webuiPort} proto tcp comment 'AI Stack - Open WebUI'\n`;
-                        ufwRulesBlock += `        ufw allow from ${subnet} to any port ${llamaPort} proto tcp comment 'AI Stack - llama.cpp API'\n`;
-                    });
-
-                    // Distro specific commands for Podman
-                    // NOTE: podman-compose is NOT in Ubuntu apt repos officially.
-                    // It is installed via pipx/pip to ensure availability.
-                    let distroPodmanSetup = '';
-                    if (distro === 'ubuntu') {
-                        distroPodmanSetup = `    # Ubuntu/Debian Package Verification & Install
-    log_info "Actualizando índice de paquetes APT..."
-    apt-get update -qq
-
-    log_info "Verificando dependencias en Ubuntu..."
-    for pkg in curl git ufw jq iptables ca-certificates gnupg python3-pip pipx podman uidmap; do
-        if ! dpkg -s "\${pkg}" &>/dev/null; then
-            log_install "Paquete base '\${pkg}'"
-            apt-get install -y -qq "\${pkg}"
-        else
-            log_skip "Paquete base '\${pkg}'"
-        fi
-    done
-
-    # podman-compose: distribuido oficialmente vía pip (no está en repos APT estables)
-    if ! command -v podman-compose &>/dev/null; then
-        log_install "podman-compose vía pipx (modo seguro para Ubuntu 22.04+/24.04)"
-        sudo -u "\${TARGET_USER}" pipx install podman-compose || pipx install --global podman-compose
-        # Crear symlink en /usr/local/bin para que systemd lo encuentre
-        if [[ -f "\${TARGET_HOME}/.local/bin/podman-compose" ]]; then
-            ln -sf "\${TARGET_HOME}/.local/bin/podman-compose" /usr/local/bin/podman-compose
-        fi
+    if ! ufw status 2>/dev/null | grep -q "Status: active"; then
+        ufw --force enable
+        log_update "UFW habilitado"
     else
-        log_skip "podman-compose (\$(podman-compose --version 2>&1 | head -n1))"
+        log_skip "UFW ya activo"
     fi
 
-    # NVIDIA Drivers on Ubuntu (solo si hay GPU NVIDIA presente)
-    if lspci 2>/dev/null | grep -qi nvidia; then
-        if ! command -v nvidia-smi &>/dev/null; then
-            log_install "Instalando controladores NVIDIA propietarios para CUDA..."
-            apt-get install -y -qq ubuntu-drivers-common
-            ubuntu-drivers autoinstall
-            log_info "Drivers NVIDIA instalados. Es OBLIGATORIO reiniciar el sistema al finalizar."
-        else
-            log_skip "Drivers NVIDIA (\$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -n 1))"
-        fi
+${ufwRules}
+    ufw reload >/dev/null 2>&1 || true
+    log_info "Estado UFW:"
+    ufw status numbered 2>/dev/null | head -n 30 || true`;
+            } else {
+                // firewalld (Fedora)
+                let fwdRules = '';
+                for (const s of subnetsList) {
+                    fwdRules += `    firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address="${s}" port port="${webuiPort}" protocol="tcp" accept' 2>/dev/null || true\n`;
+                    fwdRules += `    firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address="${s}" port port="${llamaPort}" protocol="tcp" accept' 2>/dev/null || true\n`;
+                }
+                firewallBlock = `    log_info "Configurando firewalld (Fedora)..."
+
+    if ! systemctl is-active --quiet firewalld; then
+        log_install "Iniciando firewalld..."
+        systemctl enable --now firewalld
     else
-        log_error "No se detectó hardware NVIDIA en este sistema (lspci). Se omitirá la configuración CUDA."
-        HAS_NVIDIA_GPU=0
-    fi`;
-                    } else {
-                        // Fedora Podman Setup
-                        distroPodmanSetup = `    # Fedora Package Verification & Install
-    log_info "Verificando dependencias en Fedora..."
-    for pkg in curl git ufw jq iptables python3-pip podman podman-compose; do
-        if ! rpm -q "\${pkg}" &>/dev/null; then
-            log_install "Paquete base '\${pkg}'"
-            dnf install -y -q "\${pkg}"
+        log_skip "firewalld ya está activo"
+    fi
+
+    # Política por defecto: denegar acceso externo a los puertos del stack
+    # Se usan rich-rules con source address para permitir sólo las subredes configuradas
+    log_info "Aplicando rich-rules por subred para los puertos del stack..."
+${fwdRules}
+    # SSH siempre permitido
+    firewall-cmd --permanent --add-service=ssh 2>/dev/null || true
+
+    firewall-cmd --reload
+    log_info "Estado firewalld:"
+    firewall-cmd --list-all 2>/dev/null || true`;
+            }
+
+            // ── Bloque instalación de paquetes por distro ──────────────────────
+            let pkgBlock = '';
+            let nvidiaDriverBlock = '';
+            let toolkitRepoBlock  = '';
+
+            if (distro === 'ubuntu') {
+                pkgBlock = `    log_info "Actualizando APT..."
+    apt-get update -qq
+
+    log_info "Instalando dependencias base (Ubuntu)..."
+    for pkg in curl git jq ca-certificates gnupg python3-pip pipx podman uidmap slirp4netns fuse-overlayfs; do
+        if ! dpkg -s "\${pkg}" &>/dev/null 2>&1; then
+            log_install "'\${pkg}'"
+            apt-get install -y -qq "\${pkg}"
         else
-            log_skip "Paquete base '\${pkg}'"
+            log_skip "'\${pkg}'"
         fi
     done
 
-    # NVIDIA Drivers on Fedora via RPM Fusion (solo si hay GPU)
-    if lspci 2>/dev/null | grep -qi nvidia; then
-        if ! command -v nvidia-smi &>/dev/null; then
-            log_install "Instalando drivers NVIDIA y CUDA via RPM Fusion..."
-            FEDORA_VER=\$(rpm -E %fedora)
-            dnf install -y "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-\${FEDORA_VER}.noarch.rpm" \\
-                           "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-\${FEDORA_VER}.noarch.rpm"
-            dnf install -y akmod-nvidia xorg-x11-drv-nvidia-cuda
-            log_info "Drivers NVIDIA instalados. Reinicio OBLIGATORIO al finalizar."
+    # podman-compose via pipx + symlink global para que systemd lo encuentre
+    if ! command -v podman-compose &>/dev/null; then
+        log_install "podman-compose (via pipx)"
+        if [[ "\${TARGET_USER}" != "root" ]]; then
+            sudo -u "\${TARGET_USER}" pipx install --include-deps podman-compose
+            PIPX_BIN="\${TARGET_HOME}/.local/bin/podman-compose"
         else
-            log_skip "Drivers NVIDIA (\$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -n 1))"
+            pipx install --include-deps podman-compose
+            PIPX_BIN="/root/.local/bin/podman-compose"
         fi
+        [[ -f "\${PIPX_BIN}" ]] && ln -sf "\${PIPX_BIN}" /usr/local/bin/podman-compose && log_update "Symlink: /usr/local/bin/podman-compose"
     else
-        log_error "No se detectó hardware NVIDIA en este sistema. Se omitirá la configuración CUDA."
-        HAS_NVIDIA_GPU=0
+        log_skip "podman-compose (\$(podman-compose --version 2>&1 | head -n1))"
     fi`;
-                    }
 
-                    // NVIDIA Container Toolkit + CDI generation
-                    // CDI (Container Device Interface) es el método estándar que usa Podman para acceder a GPUs.
-                    let toolkitSetup = '';
-                    if (distro === 'ubuntu') {
-                        toolkitSetup = `        # Repositorio oficial NVIDIA Container Toolkit
-        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \\
+                nvidiaDriverBlock = `        if ! command -v nvidia-smi &>/dev/null; then
+            log_install "Drivers NVIDIA (ubuntu-drivers autoinstall)..."
+            apt-get install -y -qq ubuntu-drivers-common
+            ubuntu-drivers autoinstall
+            NEEDS_REBOOT=1
+        else
+            log_skip "Drivers NVIDIA (\$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -n1))"
+        fi`;
+
+                toolkitRepoBlock = `        curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey \\
             | gpg --dearmor --yes -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg
-        curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \\
+        curl -fsSL https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list \\
             | sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' \\
             > /etc/apt/sources.list.d/nvidia-container-toolkit.list
         apt-get update -qq
         apt-get install -y -qq nvidia-container-toolkit`;
-                    } else {
-                        toolkitSetup = `        curl -s -L https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \\
+            } else {
+                // Fedora
+                pkgBlock = `    log_info "Instalando dependencias base (Fedora)..."
+    for pkg in curl git jq podman podman-compose slirp4netns fuse-overlayfs firewalld; do
+        if ! rpm -q "\${pkg}" &>/dev/null 2>&1; then
+            log_install "'\${pkg}'"
+            dnf install -y -q "\${pkg}"
+        else
+            log_skip "'\${pkg}'"
+        fi
+    done`;
+
+                nvidiaDriverBlock = `        if ! command -v nvidia-smi &>/dev/null; then
+            log_install "Drivers NVIDIA (RPM Fusion)..."
+            FEDORA_VER=\$(rpm -E %fedora)
+            dnf install -y \\
+                "https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-\${FEDORA_VER}.noarch.rpm" \\
+                "https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-\${FEDORA_VER}.noarch.rpm"
+            dnf install -y akmod-nvidia xorg-x11-drv-nvidia-cuda
+            NEEDS_REBOOT=1
+        else
+            log_skip "Drivers NVIDIA (\$(nvidia-smi --query-gpu=driver_version --format=csv,noheader 2>/dev/null | head -n1))"
+        fi`;
+
+                toolkitRepoBlock = `        curl -fsSL https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo \\
             -o /etc/yum.repos.d/nvidia-container-toolkit.repo
         dnf install -y nvidia-container-toolkit`;
-                    }
+            }
 
-                    return `#!/usr/bin/env bash
-# ==============================================================================
-#                 AI STACK DEPLOYER (EDICIÓN ENTORNO PODMAN)
-# ==============================================================================
-# SO Objetivo: ${distro.toUpperCase()}
-# Idempotente: Sí, preserva configuraciones existentes
-#
-# Hardware Optimizado:
-#   - Hilos de CPU: ${cpu}
-#   - RAM de Sistema: ${ram} GB
-#   - GPU VRAM: ${vram} GB
-#   - Capas a descargar en GPU (llama.cpp): ${calculatedLayers.value}
-# ==============================================================================
-
-set -euo pipefail
-
-# Colores de logs (definidos pronto para uso del logo y validaciones)
-RED=$'\\033[1;31m'
-GREEN=$'\\033[1;32m'
-YELLOW=$'\\033[1;33m'
-BLUE=$'\\033[1;34m'
-CYAN=$'\\033[1;36m'
-NC=$'\\033[0m'
-
-# ==============================================================================
-# ASCII ART LOGO - AI STACK DEPLOYER
-# ==============================================================================
-clear
-printf "%s\\n" "\${GREEN}"
-cat << "BANNER"
-    _    ___   ____  _             _      ____             _
-   / \\  |_ _| / ___|| |_ __ _  ___| | __ |  _ \\  ___ _ __ | | ___  _   _  ___ _ __
-  / _ \\  | |  \\___ \\| __/ _\` |/ __| |/ / | | | |/ _ \\ '_ \\| |/ _ \\| | | |/ _ \\ '__|
- / ___ \\ | |   ___) | || (_| | (__|   <  | |_| |  __/ |_) | | (_) | |_| |  __/ |
-/_/   \\_\\___| |____/ \\__\\__,_|\\___|_|\\_\\ |____/ \\___| .__/|_|\\___/ \\__, |\\___|_|
-                                                    |_|            |___/
-BANNER
-printf "%s\\n" "\${NC}"
-echo "       -- DevOps Linux Systems Automation & Podman Orchestrator --"
-echo ""
-
-# ==============================================================================
-# VALIDACIÓN DE PRIVILEGIOS (ROOT/SUDO OBLIGATORIO)
-# ==============================================================================
-log_info()    { echo -e "\${CYAN}[INFO]\${NC} \$1"; }
-log_install() { echo -e "\${BLUE}[INSTALANDO]\${NC} \$1"; }
-log_skip()    { echo -e "\${YELLOW}[OMITIENDO]\${NC} \$1"; }
-log_update()  { echo -e "\${GREEN}[ACTUALIZANDO]\${NC} \$1"; }
-log_error()   { echo -e "\${RED}[ERROR]\${NC} \$1" >&2; }
-
-if [[ \${EUID} -ne 0 ]]; then
-    log_error "Este script debe ejecutarse como root (con sudo)."
-    log_error "Por favor, ejecute: sudo \$0"
-    exit 1
-fi
-
-# ==============================================================================
-# RESOLUCIÓN DEL USUARIO INVOCADOR (para HOME, ownership y rootless podman)
-# ==============================================================================
-# Cuando se invoca con sudo, $HOME apunta a /root. Necesitamos el HOME real.
-TARGET_USER="\${SUDO_USER:-\${USER}}"
-if [[ "\${TARGET_USER}" == "root" ]] || [[ -z "\${TARGET_USER}" ]]; then
-    TARGET_USER="root"
-    TARGET_HOME="/root"
-else
-    TARGET_HOME=\$(getent passwd "\${TARGET_USER}" | cut -d: -f6)
-fi
-log_info "Usuario objetivo de la instalación: \${TARGET_USER} (\${TARGET_HOME})"
-
-# Flag para detectar presencia de GPU NVIDIA (puede ser modificada en el Paso 1)
-HAS_NVIDIA_GPU=1
-
-# ==============================================================================
-# CONFIGURACIÓN DE VARIABLES GLOBALES
-# ==============================================================================
-INSTALL_DIR=${installDirExpr}
-MODELS_DIR="\${INSTALL_DIR}/models"
-SEARXNG_DIR="\${INSTALL_DIR}/searxng"
-MODEL_NAME="${modelFileName}"
-MODEL_URL="https://huggingface.co/${hfRepo}/resolve/main/${modelFileName}"
-LLAMA_PORT=${llamaPort}
-WEBUI_PORT=${webuiPort}
-CPU_THREADS=${cpu}
-GPU_LAYERS=${calculatedLayers.value}
-OPEN_CODE_CONFIG="\${INSTALL_DIR}/open_code_desktop_config.json"
-
-# ==============================================================================
-# SELECCIÓN DE MODO DE EJECUCIÓN (Interactivo o Automático)
-# ==============================================================================
-echo -e "Seleccione el modo de ejecución para la instalación:"
-echo -e "  1) Modo Automático (Instalación desatendida de extremo a extremo)"
-echo -e "  2) Modo Interactivo (Se solicitará confirmación Yes/No antes de cada paso)"
-echo -n "Selección [1-2, default: 1]: "
-read -r RUN_MODE
-RUN_MODE=\${RUN_MODE:-1}
-
-confirm_step() {
-    local step_name="\$1"
-    if [[ "\${RUN_MODE}" == "2" ]]; then
-        echo -e ""
-        echo -n -e "\${YELLOW}¿Desea ejecutar el paso: [\${step_name}]? (y/n): \${NC}"
-        read -r response
-        if [[ "\$response" =~ ^([yY][eE][sS]|[yY])\$ ]]; then
-            return 0
+            // ── Bloque subuid/subgid (ambas distros) ──────────────────────────
+            const subuidBlock = `    # subuid/subgid requeridos para contenedores rootless de Podman
+    if [[ "\${TARGET_USER}" != "root" ]]; then
+        if ! grep -q "^\${TARGET_USER}:" /etc/subuid 2>/dev/null; then
+            log_install "subuid/subgid para '\${TARGET_USER}'"
+            usermod --add-subuids 100000-165535 --add-subgids 100000-165535 "\${TARGET_USER}"
         else
-            log_skip "Paso [\${step_name}] omitido por decisión del usuario."
-            return 1
+            log_skip "subuid/subgid ya configurados"
         fi
-    fi
-    return 0
-}
+    fi`;
 
-# ==============================================================================
-# PASO 1: REQUISITOS PREVIOS, DRIVERS Y MOTORES DE CONTENEDORES (PODMAN)
-# ==============================================================================
-if confirm_step "Instalación de Drivers, Podman Engine y podman-compose"; then
-${distroPodmanSetup}
-
-    # NVIDIA Container Toolkit (solo si hay GPU detectada)
-    if [[ "\${HAS_NVIDIA_GPU}" == "1" ]]; then
-        log_info "Comprobando NVIDIA Container Toolkit para soporte GPU en Podman..."
-        if ! command -v nvidia-ctk &>/dev/null; then
-            log_install "NVIDIA Container Toolkit"
-${toolkitSetup}
-        else
-            log_skip "NVIDIA Container Toolkit (\$(nvidia-ctk --version 2>&1 | head -n1))"
-        fi
-
-        # CRÍTICO: Podman accede a la GPU mediante CDI (Container Device Interface).
-        # Se genera el spec /etc/cdi/nvidia.yaml que Podman lee en tiempo de ejecución.
-        log_info "Generando especificación CDI de NVIDIA para Podman..."
-        mkdir -p /etc/cdi
-        if nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml 2>/dev/null; then
-            log_update "CDI spec generado correctamente en /etc/cdi/nvidia.yaml"
-            log_info "Dispositivos CDI disponibles: \$(nvidia-ctk cdi list 2>/dev/null | head -n 5 | tr '\\n' ' ')"
-        else
-            log_error "No se pudo generar el spec CDI. ¿La GPU está accesible vía nvidia-smi?"
-        fi
-    fi
-fi
-
-# ==============================================================================
-# PASO 2: ESTRUCTURA DE DIRECTORIOS
-# ==============================================================================
-if confirm_step "Creación de Directorios y Estructura Base"; then
-    log_info "Creando directorios en \${INSTALL_DIR}..."
-    mkdir -p "\${INSTALL_DIR}" "\${MODELS_DIR}" "\${SEARXNG_DIR}"
-    chmod -R 755 "\${INSTALL_DIR}"
-fi
-
-# ==============================================================================
-# PASO 3: CONFIGURAR SEARXNG CON SOPORTE JSON NATIVO
-# ==============================================================================
-if confirm_step "Configuración de SearXNG (JSON Output)"; then
-    SEARXNG_SETTINGS="\${SEARXNG_DIR}/settings.yml"
-    if [[ ! -f "\${SEARXNG_SETTINGS}" ]]; then
-        log_install "Generando archivo de configuración para SearXNG"
-        cat << 'EOF' > "\${SEARXNG_SETTINGS}"
-search:
-  safe_search: 1
-  autocomplete: "duckduckgo"
-  formats:
-    - html
-    - json  # Requerido para la integración API nativa con Open WebUI
-
-server:
-  port: 8080
-  bind_address: "0.0.0.0"
-  secret_key: "searxng-podman-stack-secret-key-change-it"
-  base_url: "http://searxng:8080"
-  image_proxy: true
-
-engines:
-  - name: duckduckgo
-    engine: duckduckgo
-    shortcut: ddg
-  - name: wikipedia
-    engine: wikipedia
-    shortcut: wp
-EOF
+            // ── Bloque instalación OpenCode ────────────────────────────────────
+            // OpenCode se instala en el host (no en contenedor) y se apunta al stack local
+            const opencodeBlock = `    log_info "Instalando OpenCode (agente de codificación IA open source)..."
+    if ! command -v opencode &>/dev/null; then
+        log_install "OpenCode via instalador oficial (opencode.ai/install)"
+        # El instalador detecta la arquitectura y descarga el binario correcto.
+        # Usamos OPENCODE_INSTALL_DIR para instalarlo en /usr/local/bin (accesible para todos).
+        OPENCODE_INSTALL_DIR=/usr/local/bin curl -fsSL https://opencode.ai/install | bash
+        log_update "OpenCode instalado: \$(opencode --version 2>&1 | head -n1)"
     else
-        log_skip "SearXNG settings.yml"
-        if ! grep -q "json" "\${SEARXNG_SETTINGS}"; then
-            log_update "Habilitando formato json en settings.yml..."
-            sed -i '/formats:/a \\    - json' "\${SEARXNG_SETTINGS}"
-        fi
+        log_skip "OpenCode ya instalado (\$(opencode --version 2>&1 | head -n1))"
     fi
-fi
 
-# ==============================================================================
-# PASO 4: GENERAR DEFINICIÓN DE PODMAN COMPOSE
-# ==============================================================================
-if confirm_step "Creación del manifiesto de Podman Compose"; then
-    PODMAN_COMPOSE_FILE="\${INSTALL_DIR}/docker-compose.yml"
-    if [[ ! -f "\${PODMAN_COMPOSE_FILE}" ]]; then
-        log_install "Generando docker-compose.yml (compatible con podman-compose + CDI)"
-        # NOTA: 'EOF' va entre comillas simples para impedir que el shell expanda
-        # variables como \${MODEL_NAME} dentro del compose. Las que SÍ queremos
-        # expandir las inyectamos vía sed al final.
-        cat << 'COMPOSE_EOF' > "\${PODMAN_COMPOSE_FILE}"
-version: "3.8"
+    # Configurar OpenCode para apuntar al llama.cpp del stack local
+    OPENCODE_CONFIG_DIR="\${TARGET_HOME}/.config/opencode"
+    OPENCODE_CONFIG_FILE="\${OPENCODE_CONFIG_DIR}/opencode.json"
+    OPENCODE_AUTH_FILE="\${OPENCODE_CONFIG_DIR}/auth.json"
 
-services:
+    mkdir -p "\${OPENCODE_CONFIG_DIR}"
+
+    if [[ ! -f "\${OPENCODE_CONFIG_FILE}" ]]; then
+        log_install "Generando configuración OpenCode para llama.cpp local..."
+        # Obtener el model alias que llama.cpp expone en /v1/models
+        # El alias se configura como --alias en el comando del contenedor
+        cat > "\${OPENCODE_CONFIG_FILE}" << OCODE_JSON
+{
+  "\$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "llama-local": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "llama.cpp local (AI Stack)",
+      "options": {
+        "baseURL": "http://localhost:${llamaPort}/v1"
+      },
+      "models": {
+        "llm-model": {
+          "name": "${modelFileName}"
+        }
+      }
+    }
+  },
+  "model": "llama-local/llm-model",
+  "small_model": "llama-local/llm-model",
+  "autoupdate": false
+}
+OCODE_JSON
+    else
+        log_skip "Configuración OpenCode ya existe en \${OPENCODE_CONFIG_FILE}"
+    fi
+
+    # auth.json: llama.cpp no requiere API key real; se usa un valor placeholder
+    if [[ ! -f "\${OPENCODE_AUTH_FILE}" ]]; then
+        log_install "Generando auth.json para OpenCode..."
+        cat > "\${OPENCODE_AUTH_FILE}" << OCODE_AUTH
+{
+  "llama-local": "sk-local-no-auth-required"
+}
+OCODE_AUTH
+    else
+        log_skip "auth.json ya existe"
+    fi
+
+    chown -R "\${TARGET_USER}:\${TARGET_USER}" "\${OPENCODE_CONFIG_DIR}" 2>/dev/null || true
+    log_update "OpenCode configurado → llama.cpp en http://localhost:${llamaPort}/v1 · modelo: llm-model"`;
+
+            // ── Compose file (Podman nativo, sin "version:") ───────────────────
+            // Se nombra podman-compose.yml (podman-compose y podman compose lo detectan)
+            // NO se usa "version:" (obsoleto en Compose v2, genera advertencia)
+            // CDI: devices con notación "nvidia.com/gpu=all"
+            const composeFileContent = `services:
+
   llama-cpp:
     image: ghcr.io/ggml-org/llama.cpp:server-cuda
     container_name: ai-stack-llama-cpp
@@ -1048,10 +880,8 @@ services:
       - "__LLAMA_PORT__:8080"
     volumes:
       - ./models:/models:z
-    # En Podman, los devices CDI se pasan vía la sección devices nativa.
-    # 'nvidia.com/gpu=all' es el identificador CDI generado por nvidia-ctk.
     devices:
-      - nvidia.com/gpu=all
+      - "nvidia.com/gpu=all"
     security_opt:
       - label=disable
     command: >
@@ -1063,6 +893,7 @@ services:
       --ctx-size 4096
       --alias llm-model
       --cont-batching
+      --flash-attn
     networks:
       - ai-net
 
@@ -1083,7 +914,7 @@ services:
       - "__WEBUI_PORT__:8080"
     environment:
       - OPENAI_API_BASE_URL=http://llama-cpp:8080/v1
-      - OPENAI_API_KEY=ai-stack-local-key
+      - OPENAI_API_KEY=sk-local-no-auth-required
       - ENABLE_RAG_WEB_SEARCH=True
       - RAG_WEB_SEARCH_ENGINE=searxng
       - SEARXNG_QUERY_URL=http://searxng:8080/search?q=<query>&format=json
@@ -1102,108 +933,13 @@ volumes:
 
 networks:
   ai-net:
-    driver: bridge
-COMPOSE_EOF
+    driver: bridge`;
 
-        # Sustituir placeholders con valores reales (idempotente)
-        sed -i "s|__LLAMA_PORT__|\${LLAMA_PORT}|g;          s|__WEBUI_PORT__|\${WEBUI_PORT}|g;          s|__MODEL_NAME__|\${MODEL_NAME}|g;          s|__CPU_THREADS__|\${CPU_THREADS}|g;          s|__GPU_LAYERS__|\${GPU_LAYERS}|g" "\${PODMAN_COMPOSE_FILE}"
-
-        # Si NO hay GPU, eliminar las secciones devices/security_opt para que arranque en CPU
-        if [[ "\${HAS_NVIDIA_GPU}" != "1" ]]; then
-            log_info "Modo CPU-only: removiendo directivas CDI del compose..."
-            sed -i '/devices:/,/nvidia.com\\/gpu=all/d;                    /security_opt:/,/label=disable/d' "\${PODMAN_COMPOSE_FILE}"
-        fi
-    else
-        log_skip "docker-compose.yml ya presente"
-    fi
-
-    # Cambiar ownership al usuario invocador para gestión rootless
-    chown -R "\${TARGET_USER}:\${TARGET_USER}" "\${INSTALL_DIR}" 2>/dev/null || true
-fi
-
-# ==============================================================================
-# PASO 5: DESCARGA DEL MODELO GGUF (REANUDABLE)
-# ==============================================================================
-if confirm_step "Descarga e Ingesta del Modelo GGUF"; then
-    MODEL_PATH="\${MODELS_DIR}/\${MODEL_NAME}"
-    log_info "Gestionando modelo LLM en \${MODEL_PATH}..."
-    if [[ ! -f "\${MODEL_PATH}" ]]; then
-        log_install "Descargando modelo \${MODEL_NAME} desde Hugging Face..."
-        curl -C - -L --progress-bar "\${MODEL_URL}" -o "\${MODEL_PATH}"
-    else
-        log_skip "Modelo GGUF ya descargado"
-    fi
-fi
-
-# ==============================================================================
-# PASO 6: CORTAFUEGOS (UFW & EVITAR BYPASS DE CONTENEDORES)
-# ==============================================================================
-if confirm_step "Asegurar Firewall y Aislamiento de Red"; then
-    log_info "Configurando aislamiento de red mediante UFW..."
-
-    # Asegurar política por defecto: DENY entrante
-    ufw default deny incoming >/dev/null 2>&1 || true
-    ufw default allow outgoing >/dev/null 2>&1 || true
-
-    if ! ufw status 2>/dev/null | grep -q "Status: active"; then
-        log_install "Habilitando firewall UFW..."
-        ufw --force enable
-    else
-        log_skip "UFW ya está activo"
-    fi
-
-    log_info "Aplicando reglas de entrada para puertos de AI Stack..."
-${ufwRulesBlock}
-
-    # NOTA IMPORTANTE: Podman (a diferencia de Docker) NO inserta reglas
-    # automáticas en iptables que salten UFW. Por defecto Podman utiliza
-    # netavark/slirp4netns y respeta las reglas del firewall del host.
-    # Por tanto NO es necesario el parche DOCKER-USER del ecosistema Docker.
-    log_info "Podman respeta nativamente UFW - no se requiere parche DOCKER-USER."
-
-    # Recargar para aplicar
-    ufw reload >/dev/null 2>&1 || true
-
-    log_info "Estado actual de UFW:"
-    ufw status numbered | head -n 20 || true
-fi
-
-# ==============================================================================
-# PASO 7: ARCHIVO DE CONFIGURACIÓN OPEN CODE DESKTOP
-# ==============================================================================
-if confirm_step "Generar Configuración para Open Code Desktop"; then
-    log_info "Configurando plantilla para Open Code Desktop..."
-    if [[ ! -f "\${OPEN_CODE_CONFIG}" ]]; then
-        log_install "Generando archivo JSON de ejemplo en \${OPEN_CODE_CONFIG}"
-        cat << EOF > "\${OPEN_CODE_CONFIG}"
-{
-  "ai.llama.endpoint": "http://localhost:${llamaPort}",
-  "ai.llama.apiKey": "ai-stack-local-key",
-  "ai.llama.model": "llm-model",
-  "ai.llama.contextLength": 4096,
-  "workspace.hardware.acceleration": "cuda"
-}
-EOF
-    else
-        log_skip "Archivo de configuración Open Code Desktop"
-    fi
-fi
-
-# ==============================================================================
-# PASO 8: INTEGRACIÓN SYSTEMD (NO HABILITADO EN EL ARRANQUE)
-# ==============================================================================
-if confirm_step "Creación del servicio Systemd"; then
-    SYSTEMD_SERVICE_PATH="/etc/systemd/system/ai-stack.service"
-
-    # Auto-detección de la ruta real de podman-compose
-    PODMAN_COMPOSE_BIN="\$(command -v podman-compose 2>/dev/null || echo /usr/local/bin/podman-compose)"
-    PODMAN_BIN="\$(command -v podman 2>/dev/null || echo /usr/bin/podman)"
-
-    if [[ ! -f "\${SYSTEMD_SERVICE_PATH}" ]]; then
-        log_install "Generando unidad systemd ai-stack.service"
-        cat << EOF > "\${SYSTEMD_SERVICE_PATH}"
-[Unit]
-Description=Local AI Stack Orchestration (llama.cpp + Open WebUI + SearXNG via Podman)
+            // ── Systemd service usando "podman compose" (Podman 4.4+ nativo) ──
+            // ExecStart usa "podman compose" (sin guión) disponible en Podman >= 4.4
+            // Fallback a podman-compose si el subcomando no está disponible
+            const systemdService = `[Unit]
+Description=AI Stack local (llama.cpp + Open WebUI + SearXNG) via Podman
 After=network-online.target
 Wants=network-online.target
 
@@ -1212,125 +948,375 @@ Type=oneshot
 RemainAfterExit=yes
 WorkingDirectory=\${INSTALL_DIR}
 Environment="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
-ExecStart=\${PODMAN_COMPOSE_BIN} -f \${INSTALL_DIR}/docker-compose.yml up -d --remove-orphans
-ExecStop=\${PODMAN_COMPOSE_BIN} -f \${INSTALL_DIR}/docker-compose.yml down
+ExecStart=/usr/bin/podman compose -f \${INSTALL_DIR}/podman-compose.yml up -d --remove-orphans
+ExecStop=/usr/bin/podman compose -f \${INSTALL_DIR}/podman-compose.yml down
 TimeoutStartSec=300
 
 [Install]
-# WantedBy=multi-user.target SE OMITE INTENCIONALMENTE para que el servicio
-# NO arranque automáticamente al iniciar el sistema. El usuario debe ejecutar:
-#   sudo systemctl start ai-stack
-EOF
-        systemctl daemon-reload
-        log_info "Servicio creado. Validando sintaxis..."
-        if systemd-analyze verify "\${SYSTEMD_SERVICE_PATH}" 2>&1 | grep -vE 'WantedBy|Install'; then
-            log_info "Unidad systemd válida."
-        fi
+# WantedBy omitido: el servicio NO arranca en el boot de forma automática.
+# Inicio manual: sudo systemctl start ai-stack`;
+
+            return `#!/usr/bin/env bash
+# ==============================================================================
+#            AI STACK DEPLOYER — EDICIÓN PODMAN (100% Rootless/Daemonless)
+# ==============================================================================
+#  SO objetivo  : ${distro.toUpperCase()}
+#  Idempotente  : Sí — preserva configs y archivos existentes en re-ejecuciones
+#  Firewall     : ${distro === 'fedora' ? 'firewalld (rich-rules por subred)' : 'UFW (allow from por subred)'}
+#  Contenedores : Podman compose (podman-compose.yml, sin "version:" obsoleto)
+#  GPU          : NVIDIA CUDA via CDI (Container Device Interface)
+#
+#  Hardware configurado:
+#    CPU Threads : ${cpu}   |   RAM: ${ram} GB   |   VRAM: ${vram} GB
+#    GPU Layers  : ${gpuLayers === -1 ? '-1 (offload completo del modelo)' : gpuLayers + ' (offload parcial)'}
+# ==============================================================================
+
+set -euo pipefail
+
+# ── Colores ──────────────────────────────────────────────────────────────────
+RED=$'\\033[1;31m'; GREEN=$'\\033[1;32m'; YELLOW=$'\\033[1;33m'
+BLUE=$'\\033[1;34m'; CYAN=$'\\033[1;36m'; NC=$'\\033[0m'
+
+log_info()    { echo -e "\${CYAN}[INFO]\${NC}       \$1"; }
+log_install() { echo -e "\${BLUE}[INSTALANDO]\${NC} \$1"; }
+log_skip()    { echo -e "\${YELLOW}[OMITIENDO]\${NC}  \$1"; }
+log_update()  { echo -e "\${GREEN}[OK]\${NC}         \$1"; }
+log_warn()    { echo -e "\${YELLOW}[AVISO]\${NC}      \$1"; }
+log_error()   { echo -e "\${RED}[ERROR]\${NC}      \$1" >&2; }
+
+# ── Banner ───────────────────────────────────────────────────────────────────
+clear
+printf "\${GREEN}"
+cat << 'BANNER'
+    _    ___   ____  _             _      ____             _
+   / \\  |_ _| / ___|| |_ __ _  ___| | __ |  _ \\  ___ _ __ | | ___  _   _  ___ _ __
+  / _ \\  | |  \\___ \\| __/ _\` |/ __| |/ / | | | |/ _ \\ '_ \\| |/ _ \\| | | |/ _ \\ '__|
+ / ___ \\ | |   ___) | || (_| | (__|   <  | |_| |  __/ |_) | | (_) | |_| |  __/ |
+/_/   \\_\\___| |____/ \\__\\__,_|\\___|_|\\_\\ |____/ \\___| .__/|_|\\___/ \\__, |\\___|_|
+                                                     |_|            |___/
+BANNER
+printf "\${NC}"
+echo "    Podman · llama.cpp · Open WebUI · SearXNG · OpenCode — ${distro.toUpperCase()}"
+echo ""
+
+# ── Validación root ───────────────────────────────────────────────────────────
+if [[ \${EUID} -ne 0 ]]; then
+    log_error "Ejecutar con sudo: sudo \$0"
+    exit 1
+fi
+
+# ── Usuario invocador (para HOME real bajo sudo) ───────────────────────────────
+TARGET_USER="\${SUDO_USER:-\${USER}}"
+if [[ "\${TARGET_USER}" == "root" ]] || [[ -z "\${TARGET_USER}" ]]; then
+    TARGET_USER="root"; TARGET_HOME="/root"
+else
+    TARGET_HOME=\$(getent passwd "\${TARGET_USER}" | cut -d: -f6)
+fi
+log_info "Usuario de instalación: \${TARGET_USER} (HOME: \${TARGET_HOME})"
+
+HAS_NVIDIA_GPU=1
+NEEDS_REBOOT=0
+
+# ── Variables globales ────────────────────────────────────────────────────────
+INSTALL_DIR=${installDirExpr}
+MODELS_DIR="\${INSTALL_DIR}/models"
+SEARXNG_DIR="\${INSTALL_DIR}/searxng"
+COMPOSE_FILE="\${INSTALL_DIR}/podman-compose.yml"
+SYSTEMD_SVC="/etc/systemd/system/ai-stack.service"
+
+MODEL_NAME="${modelFileName}"
+HF_REPO="${hfRepo}"
+MODEL_URL="https://huggingface.co/\${HF_REPO}/resolve/main/\${MODEL_NAME}?download=true"
+
+LLAMA_PORT=${llamaPort}
+WEBUI_PORT=${webuiPort}
+CPU_THREADS=${cpu}
+GPU_LAYERS=${gpuLayers}
+
+# ── Modo de ejecución ─────────────────────────────────────────────────────────
+echo "Modo de ejecución:"
+echo "  1) Automático  (sin interrupciones)"
+echo "  2) Interactivo (confirmación en cada paso)"
+echo -n "Selección [1-2, default 1]: "
+read -r RUN_MODE; RUN_MODE=\${RUN_MODE:-1}
+
+confirm_step() {
+    [[ "\${RUN_MODE}" != "2" ]] && return 0
+    echo ""; echo -n -e "\${YELLOW}¿Ejecutar [\$1]? (y/n): \${NC}"
+    read -r r; [[ "\$r" =~ ^[yY] ]] && return 0
+    log_skip "[\$1] omitido."; return 1
+}
+
+# ==============================================================================
+# PASO 1: Dependencias, Podman y drivers NVIDIA
+# ==============================================================================
+if confirm_step "Instalar dependencias, Podman y drivers NVIDIA"; then
+${pkgBlock}
+
+${subuidBlock}
+
+    # ── NVIDIA GPU ────────────────────────────────────────────────────────────
+    if lspci 2>/dev/null | grep -qi nvidia; then
+${nvidiaDriverBlock}
     else
-        log_skip "Servicio Systemd ai-stack.service (ya existe)"
+        log_warn "No se detectó GPU NVIDIA. Se omite configuración CUDA. Modo CPU-only."
+        HAS_NVIDIA_GPU=0
     fi
 
-    # Forzar deshabilitado: garantiza que NO arranque al boot
-    if systemctl is-enabled ai-stack.service &>/dev/null; then
-        log_update "Deshabilitando inicio automático (política: arranque manual exclusivo)..."
-        systemctl disable ai-stack.service 2>/dev/null || true
-    else
-        log_skip "ai-stack.service ya configurado para arranque manual exclusivo"
+    # ── NVIDIA Container Toolkit + CDI ────────────────────────────────────────
+    # CDI (Container Device Interface) es el mecanismo oficial de Podman para
+    # acceder a GPUs sin necesidad de privilegios especiales.
+    if [[ "\${HAS_NVIDIA_GPU}" == "1" ]]; then
+        if ! command -v nvidia-ctk &>/dev/null; then
+            log_install "NVIDIA Container Toolkit"
+${toolkitRepoBlock}
+        else
+            log_skip "nvidia-ctk (\$(nvidia-ctk --version 2>&1 | head -n1))"
+        fi
+
+        log_info "Generando spec CDI en /etc/cdi/nvidia.yaml..."
+        mkdir -p /etc/cdi
+        if nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml 2>/dev/null; then
+            log_update "CDI spec generado"
+            nvidia-ctk cdi list 2>/dev/null | head -n 5 | while read -r d; do log_info "  CDI: \${d}"; done
+        else
+            log_warn "No se pudo generar CDI spec. Verifica que nvidia-smi funcione."
+            HAS_NVIDIA_GPU=0
+        fi
     fi
 fi
 
 # ==============================================================================
-# PASO 9: VERIFICACIÓN FINAL Y PRE-DESCARGA DE IMÁGENES
+# PASO 2: Estructura de directorios
 # ==============================================================================
-if confirm_step "Pre-descarga de imágenes Podman (acelera el primer arranque)"; then
-    log_info "Haciendo pull inicial de imágenes con Podman..."
-    cd "\${INSTALL_DIR}"
-    # Usamos podman pull directo para mejor manejo de errores que podman-compose pull
-    for img in "ghcr.io/ggml-org/llama.cpp:server-cuda"             "docker.io/searxng/searxng:latest"             "ghcr.io/open-webui/open-webui:main"; do
-        log_update "Descargando \${img}..."
-        podman pull "\${img}" || log_error "Fallo al hacer pull de \${img} (se reintentará al iniciar)"
+if confirm_step "Crear directorios en \${INSTALL_DIR}"; then
+    mkdir -p "\${INSTALL_DIR}" "\${MODELS_DIR}" "\${SEARXNG_DIR}"
+    chmod 755 "\${INSTALL_DIR}" "\${MODELS_DIR}" "\${SEARXNG_DIR}"
+    log_update "Directorios listos: \${INSTALL_DIR}"
+fi
+
+# ==============================================================================
+# PASO 3: Configuración de SearXNG (salida JSON habilitada)
+# ==============================================================================
+if confirm_step "Configurar SearXNG"; then
+    SEARXNG_SETTINGS="\${SEARXNG_DIR}/settings.yml"
+    if [[ ! -f "\${SEARXNG_SETTINGS}" ]]; then
+        log_install "Generando settings.yml para SearXNG"
+        cat << 'SEARXNG_EOF' > "\${SEARXNG_SETTINGS}"
+search:
+  safe_search: 1
+  autocomplete: "duckduckgo"
+  formats:
+    - html
+    - json
+
+server:
+  port: 8080
+  bind_address: "0.0.0.0"
+  secret_key: "ai-stack-searxng-cambia-esta-clave-en-produccion"
+  base_url: "http://searxng:8080"
+  image_proxy: true
+
+engines:
+  - name: duckduckgo
+    engine: duckduckgo
+    shortcut: ddg
+  - name: wikipedia
+    engine: wikipedia
+    shortcut: wp
+    language: "es"
+SEARXNG_EOF
+    else
+        log_skip "SearXNG settings.yml ya existe"
+        if ! grep -qE "^[[:space:]]*- json" "\${SEARXNG_SETTINGS}"; then
+            log_update "Habilitando formato JSON en settings.yml..."
+            sed -i '/^  formats:/a\\    - json' "\${SEARXNG_SETTINGS}"
+        fi
+    fi
+fi
+
+# ==============================================================================
+# PASO 4: Manifiesto Podman Compose (podman-compose.yml)
+# ==============================================================================
+if confirm_step "Generar podman-compose.yml"; then
+    if [[ ! -f "\${COMPOSE_FILE}" ]]; then
+        log_install "Generando \${COMPOSE_FILE}"
+
+        # Heredoc con 'COMPOSE_EOF' (comillas simples = sin expansión de variables bash)
+        # Los placeholders __VAR__ se sustituyen después con sed separados
+        cat << 'COMPOSE_EOF' > "\${COMPOSE_FILE}"
+${composeFileContent}
+COMPOSE_EOF
+
+        # Sustituciones separadas (evita el bug de backslash+newline en sed multilínea)
+        sed -i "s|__LLAMA_PORT__|${llamaPort}|g"       "\${COMPOSE_FILE}"
+        sed -i "s|__WEBUI_PORT__|${webuiPort}|g"       "\${COMPOSE_FILE}"
+        sed -i "s|__MODEL_NAME__|${modelFileName}|g"   "\${COMPOSE_FILE}"
+        sed -i "s|__CPU_THREADS__|${cpu}|g"            "\${COMPOSE_FILE}"
+        sed -i "s|__GPU_LAYERS__|${gpuLayers}|g"       "\${COMPOSE_FILE}"
+
+        # Modo CPU-only: eliminar directivas CDI y security_opt
+        if [[ "\${HAS_NVIDIA_GPU}" != "1" ]]; then
+            log_warn "Modo CPU-only: eliminando directivas GPU del compose..."
+            sed -i '/^    devices:/{N;d}'      "\${COMPOSE_FILE}"
+            sed -i '/^    security_opt:/{N;d}' "\${COMPOSE_FILE}"
+        fi
+
+        log_update "podman-compose.yml generado"
+    else
+        log_skip "podman-compose.yml ya existe"
+    fi
+
+    chown -R "\${TARGET_USER}:\${TARGET_USER}" "\${INSTALL_DIR}" 2>/dev/null || true
+fi
+
+# ==============================================================================
+# PASO 5: Descarga del modelo GGUF (con reanudación automática)
+# ==============================================================================
+if confirm_step "Descargar modelo GGUF: ${modelFileName} (~$(customModelMode.value ? '?' : (activeModel.value ? activeModel.value.size : '?'))}"; then
+    MODEL_PATH="\${MODELS_DIR}/\${MODEL_NAME}"
+    if [[ ! -f "\${MODEL_PATH}" ]]; then
+        log_install "Descargando \${MODEL_NAME} desde HuggingFace..."
+        log_info "Repo  : \${HF_REPO}"
+        log_info "URL   : \${MODEL_URL}"
+        # -C - reanuda descargas interrumpidas
+        # --fail falla con código de error en respuestas HTTP 4xx/5xx
+        curl -C - -L --fail --progress-bar "\${MODEL_URL}" -o "\${MODEL_PATH}" || {
+            log_error "Descarga fallida. Verifica la URL, el nombre del repo/archivo y tu conexión."
+            rm -f "\${MODEL_PATH}"
+            exit 1
+        }
+        log_update "Modelo listo: \${MODEL_PATH}"
+    else
+        log_skip "Modelo ya descargado: \${MODEL_NAME}"
+    fi
+fi
+
+# ==============================================================================
+# PASO 6: Firewall (${distro === 'fedora' ? 'firewalld' : 'UFW'})
+# ==============================================================================
+if confirm_step "Configurar firewall (${distro === 'fedora' ? 'firewalld' : 'UFW'})"; then
+${firewallBlock}
+fi
+
+# ==============================================================================
+# PASO 7: Instalación y configuración de OpenCode
+# ==============================================================================
+if confirm_step "Instalar OpenCode y configurar para llama.cpp local"; then
+${opencodeBlock}
+fi
+
+# ==============================================================================
+# PASO 8: Servicio Systemd (inicio MANUAL, sin arranque automático)
+# ==============================================================================
+if confirm_step "Crear servicio systemd ai-stack.service"; then
+    if [[ ! -f "\${SYSTEMD_SVC}" ]]; then
+        log_install "Generando \${SYSTEMD_SVC}"
+
+        # Verificar que "podman compose" (subcomando nativo Podman 4.4+) esté disponible
+        if podman compose version &>/dev/null 2>&1; then
+            log_update "Usando 'podman compose' (subcomando nativo de Podman)"
+            COMPOSE_CMD="/usr/bin/podman compose"
+        elif command -v podman-compose &>/dev/null; then
+            log_warn "'podman compose' no disponible, usando 'podman-compose' como fallback"
+            COMPOSE_CMD="\$(command -v podman-compose)"
+        else
+            log_error "No se encontró ni 'podman compose' ni 'podman-compose'. Instala podman-compose."
+            exit 1
+        fi
+
+        # Escribir la unidad. Heredoc con delimitador sin comillas para que
+        # \${INSTALL_DIR} y \${COMPOSE_CMD} (variables bash del script) se expandan AHORA,
+        # generando valores literales en el archivo .service.
+        cat > "\${SYSTEMD_SVC}" << SYSTEMD_EOF
+${systemdService}
+SYSTEMD_EOF
+
+        systemctl daemon-reload
+        log_update "Servicio systemd creado"
+    else
+        log_skip "ai-stack.service ya existe"
+        systemctl daemon-reload
+    fi
+
+    # Garantizar que NO esté habilitado en el arranque
+    if systemctl is-enabled ai-stack.service &>/dev/null 2>&1; then
+        systemctl disable ai-stack.service 2>/dev/null || true
+        log_warn "Inicio automático deshabilitado (política: arranque manual exclusivo)"
+    else
+        log_skip "ai-stack.service ya configurado como manual"
+    fi
+fi
+
+# ==============================================================================
+# PASO 9: Pre-descarga de imágenes Podman
+# ==============================================================================
+if confirm_step "Pre-descargar imágenes de contenedores Podman"; then
+    log_info "Descargando imágenes (puede tardar varios minutos)..."
+    for img in \\
+        "ghcr.io/ggml-org/llama.cpp:server-cuda" \\
+        "docker.io/searxng/searxng:latest" \\
+        "ghcr.io/open-webui/open-webui:main"; do
+        log_update "Pull: \${img}"
+        podman pull "\${img}" || log_warn "Pull fallido para \${img} (se reintentará al iniciar)"
     done
 fi
 
 # ==============================================================================
-# INFORME DE COMPLETADO
+# INFORME FINAL
 # ==============================================================================
 echo ""
-echo -e "\${GREEN}==============================================================================\${NC}"
-echo -e "\${GREEN}             STACK DE IA LOCAL CON PODMAN DESPLEGADO CON ÉXITO                \${NC}"
-echo -e "\${GREEN}==============================================================================\${NC}"
+echo -e "\${GREEN}=============================================================================="
+echo -e "           AI STACK LOCAL DESPLEGADO EXITOSAMENTE — PODMAN"
+echo -e "==============================================================================\${NC}"
 echo ""
-echo -e "\${CYAN}>> Resumen de Configuración:\${NC}"
-echo -e "   - Distro:           ${distro.toUpperCase()}"
-echo -e "   - Usuario:          \${TARGET_USER}"
-echo -e "   - Directorio:       \${INSTALL_DIR}"
-echo -e "   - Modelo:           \${MODEL_NAME}"
-echo -e "   - GPU Offload:      \${GPU_LAYERS} capas"
-echo -e "   - Puerto WebUI:     \${WEBUI_PORT}"
-echo -e "   - Puerto llama.cpp: \${LLAMA_PORT}"
+echo -e "\${CYAN}Configuración activa:\${NC}"
+echo -e "  Distro      : ${distro.toUpperCase()}"
+echo -e "  Firewall    : ${distro === 'fedora' ? 'firewalld (rich-rules)' : 'UFW'}"
+echo -e "  Usuario     : \${TARGET_USER}"
+echo -e "  Directorio  : \${INSTALL_DIR}"
+echo -e "  Modelo      : \${MODEL_NAME}"
+echo -e "  GPU Layers  : \${GPU_LAYERS}\$([ "\${GPU_LAYERS}" = "-1" ] && echo " (offload total)")"
+echo -e "  WebUI       : :\${WEBUI_PORT}"
+echo -e "  llama.cpp   : :\${LLAMA_PORT}"
 echo ""
-echo -e "\${CYAN}>> Iniciar el Stack manualmente (NO arranca solo al boot):\${NC}"
-echo -e "   \${GREEN}sudo systemctl start ai-stack\${NC}"
+echo -e "\${CYAN}Comandos:\${NC}"
+echo -e "  Iniciar stack   →  \${GREEN}sudo systemctl start ai-stack\${NC}"
+echo -e "  Ver contenedores →  \${GREEN}podman ps\${NC}"
+echo -e "  Open WebUI       →  \${GREEN}http://\$(hostname -I | awk '{print \$1}'):\${WEBUI_PORT}\${NC}"
+echo -e "  Detener stack   →  \${RED}sudo systemctl stop ai-stack\${NC}"
 echo ""
-echo -e "\${CYAN}>> Verificar estado de los contenedores:\${NC}"
-echo -e "   \${GREEN}podman ps\${NC}"
+echo -e "\${CYAN}OpenCode (agente de codificación IA):\${NC}"
+echo -e "  Iniciar    →  \${GREEN}opencode\${NC}  (en cualquier directorio de proyecto)"
+echo -e "  Config     →  \${YELLOW}\${TARGET_HOME}/.config/opencode/opencode.json\${NC}"
+echo -e "  Proveedor  →  llama.cpp local en http://localhost:\${LLAMA_PORT}/v1"
+echo -e "  Nota       →  El stack debe estar corriendo antes de usar OpenCode"
 echo ""
-echo -e "\${CYAN}>> Acceder a Open WebUI desde la red local:\${NC}"
-echo -e "   \${GREEN}http://\$(hostname -I | awk '{print \$1}'):\${WEBUI_PORT}\${NC}"
-echo ""
-echo -e "\${CYAN}>> Detener el Stack:\${NC}"
-echo -e "   \${RED}sudo systemctl stop ai-stack\${NC}"
-echo ""
-echo -e "\${CYAN}>> Configuración para Open Code Desktop:\${NC}"
-echo -e "   \${YELLOW}\${OPEN_CODE_CONFIG}\${NC}"
-echo ""
-if [[ "\${HAS_NVIDIA_GPU}" == "1" ]] && ! nvidia-smi &>/dev/null; then
-    echo -e "\${YELLOW}>> ATENCIÓN: Los drivers NVIDIA recién instalados requieren REINICIO\${NC}"
-    echo -e "\${YELLOW}   Ejecute 'sudo reboot' antes de iniciar el stack.\${NC}"
+if [[ "\${NEEDS_REBOOT}" == "1" ]]; then
+    echo -e "\${YELLOW}>> ATENCIÓN: Se instalaron drivers NVIDIA. REINICIO OBLIGATORIO antes de iniciar el stack."
+    echo -e "   Ejecuta: sudo reboot\${NC}"
     echo ""
 fi
 echo -e "\${GREEN}==============================================================================\${NC}"
 `;
-                });
+        });
 
-                // Trigger HighlightJS code rendering
-                watch(generatedScript, () => {
-                    nextTick(() => {
-                        if (scriptCodeBlock.value) {
-                            delete scriptCodeBlock.value.dataset.highlighted;
-                            hljs.highlightElement(scriptCodeBlock.value);
-                        }
-                    });
-                });
+        watch(generatedScript, () => {
+            nextTick(() => { if (scriptCodeBlock.value) { delete scriptCodeBlock.value.dataset.highlighted; hljs.highlightElement(scriptCodeBlock.value); } });
+        });
 
-                onMounted(() => {
-                    lucide.createIcons();
-                });
+        onMounted(() => { lucide.createIcons(); });
 
-                return {
-                    customParams,
-                    modelsCatalog,
-                    filteredModels,
-                    customModelMode,
-                    customModelRepo,
-                    customModelFile,
-                    verifyingModel,
-                    verificationStatus,
-                    calculatedLayers,
-                    toastMessage,
-                    isModalOpen,
-                    scriptCodeBlock,
-                    generatedScript,
-                    toggleCustomModelMode,
-                    verifyHuggingFaceModel,
-                    onModelSelectChange,
-                    openScriptModal,
-                    closeScriptModal,
-                    copyScript,
-                    downloadScript
-                };
-            }
-        }).mount('#app');
-    </script>
+        return {
+            customParams, modelsCatalog, filteredModels, activeModel,
+            customModelMode, customModelRepo, customModelFile,
+            verifyingModel, verificationStatus, calculatedLayers,
+            toastMessage, isModalOpen, scriptCodeBlock, generatedScript,
+            toggleCustomModelMode, verifyHuggingFaceModel, onModelSelectChange,
+            openScriptModal, closeScriptModal, copyScript, downloadScript
+        };
+    }
+}).mount('#app');
+</script>
 </body>
 </html>

@@ -146,7 +146,6 @@ export function useModelCatalog() {
   }
 
   async function fetchCatalog() {
-    const controller = new AbortController()
     const cached = sessionStorage.getItem('ai-stack-catalog')
     const cachedTs = sessionStorage.getItem('ai-stack-catalog-ts')
     const fiveMin = 5 * 60 * 1000
@@ -160,14 +159,8 @@ export function useModelCatalog() {
       } catch { /* invalid cache, refetch */ }
     }
 
-    setTimeout(() => buildCatalog(controller.signal), 100)
-    try {
-      await buildCatalog(controller.signal)
-    } catch {
-      // fallback already set
-    } finally {
-      loading.value = false
-    }
+    await buildCatalog()
+    loading.value = false
   }
 
   onMounted(fetchCatalog)

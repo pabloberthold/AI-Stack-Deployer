@@ -262,7 +262,7 @@ services:
       - "__OLLAMA_PORT__:11434"
     volumes:
       - /modelos:/root/.ollama:z
-${HAS_NVIDIA ? gpuBlock : ''}
+${gpuBlock}
     environment:
       - OLLAMA_KEEP_ALIVE=24h
       - OLLAMA_NUM_PARALLEL=1

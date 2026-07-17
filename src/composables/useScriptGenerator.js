@@ -18,8 +18,10 @@ export function useScriptGenerator(params, findModelOverride) {
   }
 
   const d = computed(() => params.value.distro)
-  const cpu = computed(() => params.value.cpuThreads || '4')
-  const ram = computed(() => params.value.ram || '16')
+  const maxModels = computed(() => {
+    const v = parseInt(params.value.maxModels)
+    return (!isNaN(v) && v >= 1 && v <= 8) ? v : 1
+  })
   const ollamaPort = computed(() => params.value.ollamaPort || '11434')
   const webuiPort = computed(() => params.value.webuiPort || '8080')
   const allowedSubnets = computed(() => params.value.allowedSubnets || '192.168.1.0/24, 192.168.68.0/24')
@@ -36,9 +38,8 @@ export function useScriptGenerator(params, findModelOverride) {
 # SO: ${d.value.toUpperCase()}
 # Modo: Idempotente — las configuraciones existentes se preservan
 #
-# Hardware:
-#   - Hilos CPU: ${cpu.value}
-#   - RAM: ${ram.value} GB
+# Concurrencia:
+#   - Máx. modelos simultáneos: ${maxModels.value}
 #   - Puerto Ollama: ${ollamaPort.value}
 #   - Puerto WebUI: ${webuiPort.value}
 # ==============================================================================
@@ -85,7 +86,6 @@ INSTALL_DIR="${installDir.value}"
 MODEL_NAME="${esc(resolveModel().name)}"
 OLLAMA_PORT=${ollamaPort.value}
 WEBUI_PORT=${webuiPort.value}
-CPU_THREADS=${cpu.value}
 `
   }
 
@@ -265,8 +265,8 @@ services:
 ${gpuBlock}
     environment:
       - OLLAMA_KEEP_ALIVE=24h
-      - OLLAMA_NUM_PARALLEL=1
-      - OLLAMA_MAX_LOADED_MODELS=1
+      - OLLAMA_NUM_PARALLEL=${maxModels.value}
+      - OLLAMA_MAX_LOADED_MODELS=${maxModels.value}
     networks:
       - ai-net
 

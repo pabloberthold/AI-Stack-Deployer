@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import { OLLAMA_CATALOG as FALLBACK_CATALOG } from './data/modelsCatalog.js'
-import { validatePort, validateCpuThreads, validateRam, validateVram, validateSubnets } from './utils/validation.js'
+import { validatePort, validateSubnets } from './utils/validation.js'
 import { useToast } from './composables/useToast.js'
 import { useModelCatalog } from './composables/useModelCatalog.js'
 import { useScriptGenerator } from './composables/useScriptGenerator.js'
@@ -25,9 +25,7 @@ const customModelFile = ref('qwen2.5-coder-14b-instruct-q4_k_m.gguf')
 
 const params = ref({
   distro: 'ubuntu',
-  cpuThreads: '',
-  ram: '',
-  vram: '',
+  maxModels: '',
   modelName: FALLBACK_CATALOG[1]?.value || '',
   ollamaPort: '',
   webuiPort: '',
@@ -42,14 +40,10 @@ const errors = reactive({})
 function validateAll() {
   Object.keys(errors).forEach(k => delete errors[k])
 
-  const cpu = validateCpuThreads(params.value.cpuThreads)
-  if (!cpu.valid) errors.cpuThreads = cpu.message
-
-  const r = validateRam(params.value.ram)
-  if (!r.valid) errors.ram = r.message
-
-  const v = validateVram(params.value.vram)
-  if (!v.valid) errors.vram = v.message
+  const mm = parseInt(params.value.maxModels)
+  if (params.value.maxModels && (isNaN(mm) || mm < 1 || mm > 8)) {
+    errors.maxModels = 'Debe ser entre 1 y 8'
+  }
 
   const lp = validatePort(params.value.ollamaPort)
   if (!lp.valid) errors.ollamaPort = lp.message
@@ -133,13 +127,9 @@ function handleModelVerified(result) {
             </div>
 
             <HardwareSection
-              :cpu-threads="params.cpuThreads"
-              :ram="params.ram"
-              :vram="params.vram"
+              :max-models="params.maxModels"
               :errors="errors"
-              @update:cpu-threads="params.cpuThreads = $event"
-              @update:ram="params.ram = $event"
-              @update:vram="params.vram = $event"
+              @update:max-models="params.maxModels = $event"
             />
 
             <ModelSelector

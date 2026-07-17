@@ -1,9 +1,12 @@
 <script setup>
-defineProps({
-  distro: String,
-})
-
+defineProps({ distro: String })
 const emit = defineEmits(['update:distro'])
+
+const distros = [
+  { id: 'ubuntu', label: 'Ubuntu', class: 'bg-orange-600/20 text-orange-400 border-orange-500/20' },
+  { id: 'rhel', label: 'RHEL', class: 'bg-red-600/20 text-red-400 border-red-500/20' },
+  { id: 'fedora', label: 'Fedora', class: 'bg-blue-600/20 text-blue-400 border-blue-500/20' },
+]
 </script>
 
 <template>
@@ -16,27 +19,18 @@ const emit = defineEmits(['update:distro'])
         <div>
           <h1 class="text-lg font-bold tracking-tight text-white flex items-center gap-2">
             AI Stack Deployer
-            <span class="text-[10px] font-mono bg-purple-900/40 text-purple-400 border border-purple-800/30 px-2 py-0.5 rounded">Exclusivo Podman</span>
+            <span class="text-[10px] font-mono bg-purple-900/40 text-purple-400 border border-purple-800/30 px-2 py-0.5 rounded">Ollama + Podman</span>
           </h1>
-          <p class="text-xs text-zinc-400">Orquestador de entornos locales de IA y motores de búsqueda con aceleración CUDA</p>
+          <p class="text-xs text-zinc-400">Ollama · Open WebUI · SearXNG (opt) · Podman</p>
         </div>
       </div>
 
-      <div class="flex items-center space-x-4">
-        <div class="flex items-center bg-zinc-950 border border-zinc-900 p-1 rounded-lg">
-          <button
-            @click="$emit('update:distro', 'ubuntu')"
-            :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all flex items-center space-x-1.5 cursor-pointer', distro === 'ubuntu' ? 'bg-orange-600/20 text-orange-400 border border-orange-500/20' : 'text-zinc-500 hover:text-zinc-300']"
-          >
-            <span>Ubuntu</span>
-          </button>
-          <button
-            @click="$emit('update:distro', 'fedora')"
-            :class="['px-3.5 py-1.5 rounded text-xs font-medium transition-all flex items-center space-x-1.5 cursor-pointer', distro === 'fedora' ? 'bg-blue-600/20 text-blue-400 border border-blue-500/20' : 'text-zinc-500 hover:text-zinc-300']"
-          >
-            <span>Fedora</span>
-          </button>
-        </div>
+      <div class="flex items-center bg-zinc-950 border border-zinc-900 p-1 rounded-lg">
+        <button
+          v-for="d in distros" :key="d.id"
+          @click="$emit('update:distro', d.id)"
+          :class="['px-3 py-1.5 rounded text-xs font-medium transition-all cursor-pointer', distro === d.id ? d.class : 'text-zinc-500 hover:text-zinc-300']"
+        >{{ d.label }}</button>
       </div>
     </div>
   </header>

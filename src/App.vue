@@ -1,6 +1,6 @@
 <script setup>
-import { ref, reactive, computed } from 'vue'
-import { MODELS_CATALOG as FALLBACK_CATALOG } from './data/modelsCatalog.js'
+import { ref, reactive } from 'vue'
+import { OLLAMA_CATALOG as FALLBACK_CATALOG } from './data/modelsCatalog.js'
 import { validatePort, validateCpuThreads, validateRam, validateVram, validateSubnets } from './utils/validation.js'
 import { useToast } from './composables/useToast.js'
 import { useModelCatalog } from './composables/useModelCatalog.js'
@@ -29,10 +29,12 @@ const params = ref({
   ram: '',
   vram: '',
   modelName: FALLBACK_CATALOG[1]?.value || '',
-  llamaPort: '',
+  ollamaPort: '',
   webuiPort: '',
   allowedSubnets: '',
   installDir: '',
+  enableUfw: true,
+  enableSearxng: false,
 })
 
 const errors = reactive({})
@@ -49,8 +51,8 @@ function validateAll() {
   const v = validateVram(params.value.vram)
   if (!v.valid) errors.vram = v.message
 
-  const lp = validatePort(params.value.llamaPort)
-  if (!lp.valid) errors.llamaPort = lp.message
+  const lp = validatePort(params.value.ollamaPort)
+  if (!lp.valid) errors.ollamaPort = lp.message
 
   const wp = validatePort(params.value.webuiPort)
   if (!wp.valid) errors.webuiPort = wp.message
@@ -61,12 +63,7 @@ function validateAll() {
   return Object.keys(errors).length === 0
 }
 
-const {
-  generatedScript,
-  gpuLayers,
-  resolvedModelFile,
-  resolvedRepo,
-} = useScriptGenerator(params, customModelMode, customModelRepo, customModelFile, findModel)
+const { generatedScript } = useScriptGenerator(params, findModel)
 
 function openScriptModal() {
   if (!validateAll()) {
@@ -160,15 +157,20 @@ function handleModelVerified(result) {
             />
 
             <NetworkSection
-              :llama-port="params.llamaPort"
+              :ollama-port="params.ollamaPort"
               :webui-port="params.webuiPort"
               :allowed-subnets="params.allowedSubnets"
               :install-dir="params.installDir"
+              :enable-ufw="params.enableUfw"
+              :enable-searxng="params.enableSearxng"
+              :distro="params.distro"
               :errors="errors"
-              @update:llama-port="params.llamaPort = $event"
+              @update:ollama-port="params.ollamaPort = $event"
               @update:webui-port="params.webuiPort = $event"
               @update:allowed-subnets="params.allowedSubnets = $event"
               @update:install-dir="params.installDir = $event"
+              @update:enable-ufw="params.enableUfw = $event"
+              @update:enable-searxng="params.enableSearxng = $event"
             />
 
             <ActionButtons
@@ -181,9 +183,10 @@ function handleModelVerified(result) {
         <div class="lg:col-span-5 space-y-6">
           <FlowChart
             :allowed-subnets="params.allowedSubnets"
-            :llama-port="params.llamaPort"
+            :ollama-port="params.ollamaPort"
             :webui-port="params.webuiPort"
-            :gpu-layers="gpuLayers"
+            :enable-searxng="params.enableSearxng"
+            :distro="params.distro"
           />
         </div>
 

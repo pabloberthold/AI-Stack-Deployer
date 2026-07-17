@@ -1,2 +1,3 @@
 node_modules/
 dist/
+# docs/ is committed for GitHub Pages

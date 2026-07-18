@@ -1,176 +1,239 @@
-# AI Stack Local — Ubuntu + Podman
+# AI Stack Deployer — 100% Podman
 
-**Un deployer automatizado para montar un stack de IA local completo en Ubuntu 22.04/24.04 LTS con un solo comando.**
+> Orquestador de entorno de IA local para Linux.  
+> Despliega **llama.cpp + Open WebUI + SearXNG + OpenCode** usando Podman (sin Docker, sin daemon, sin root permanente).
 
-## Stack
+[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
+[![Podman](https://img.shields.io/badge/Engine-Podman-892CA0)](https://podman.io)
+[![CUDA](https://img.shields.io/badge/GPU-NVIDIA_CUDA-76B900)](https://developer.nvidia.com/cuda)
+[![Ubuntu](https://img.shields.io/badge/Ubuntu-22.04%2B%2F24.04-E95420)](https://ubuntu.com)
+[![Fedora](https://img.shields.io/badge/Fedora-39%2B-294172)](https://fedoraproject.org)
 
-```
-┌─────────────────────────────────────────────┐
-│                  Open WebUI                  │
-│           (Interfaz web estilo ChatGPT)       │
-├─────────────────────┬───────────────────────┤
-│    llama.cpp        │       SearXNG          │
-│  (motor de            │  (búsqueda web        │
-│   inferencia local)   │   para RAG)           │
-├─────────┬───────────┴──────┬────────────────┤
-│ OpenCode │  Modelo GGUF    │  NVIDIA GPU    │
-│ (CLI IA) │  (Qwen Coder     │  via CDI o CPU  │
-│          │   14B Q4_K_M)    │                 │
-└──────────┴─────────────────┴─────────────────┘
-```
+---
 
-### Componentes
+## 🌐 Uso de la Herramienta Web
 
-| Componente | Puerto | Descripción |
+Abre [`index.html`](./index.html) en tu navegador (o visita la GitHub Page de este repo) para configurar y generar el script de instalación de forma visual:
+
+1. Selecciona tu distro: **Ubuntu** o **Fedora**
+2. Configura tu hardware (CPU threads, RAM, VRAM GPU)
+3. Elige el modelo GGUF del catálogo (70+ modelos) o ingresa uno personalizado
+4. Define los puertos y subredes permitidas
+5. Haz clic en **Generar Script** → descarga `setup_ai_stack.sh`
+6. Ejecuta en tu servidor: `sudo bash setup_ai_stack.sh`
+
+---
+
+## 📦 Stack de Aplicaciones
+
+| Aplicación | Función | Repo |
 |---|---|---|
-| [llama.cpp](https://github.com/ggerganov/llama.cpp) | `3000` | Servidor OpenAI-compatible para inferencia local |
-| [Open WebUI](https://github.com/open-webui/open-webui) | `8080` | Interfaz web tipo ChatGPT con RAG |
-| [SearXNG](https://github.com/searxng/searxng) | — | Metabuscador privado para RAG web |
-| [OpenCode](https://opencode.ai) | CLI | Asistente IA para terminal |
+| **llama.cpp** | Motor de inferencia LLM en C++. API OpenAI-compatible, CUDA, formato GGUF | [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) |
+| **Open WebUI** | Interfaz web tipo ChatGPT con RAG, historial y búsqueda web | [open-webui/open-webui](https://github.com/open-webui/open-webui) |
+| **SearXNG** | Metabuscador privado auto-hospedado, integración JSON con Open WebUI | [searxng/searxng](https://github.com/searxng/searxng) |
+| **OpenCode** | Agente de codificación IA open source (alternativa a Claude Code) | [anomalyco/opencode](https://github.com/anomalyco/opencode) |
+| **Podman** | Motor de contenedores daemonless, rootless, 100% OCI-compatible | [containers/podman](https://github.com/containers/podman) |
+| **firewalld** | Firewall dinámico con zonas y rich-rules *(Fedora)* | [firewalld.org](https://firewalld.org) |
+| **UFW** | Uncomplicated Firewall, reglas por subred *(Ubuntu)* | [UFW docs](https://help.ubuntu.com/community/UFW) |
 
-## Requisitos
+---
 
-- **Ubuntu 22.04 o 24.04 LTS** (limpieza o servidor)
-- **4 GB+ RAM** (16 GB+ recomendado)
-- **15 GB+ espacio libre en disco**
-- **GPU NVIDIA** (opcional, con 10 GB+ VRAM para offload completo)
-- Conexión a internet
+## 🏗️ Arquitectura
 
-## Uso
-
-```bash
-# 1. Descargar el script
-wget https://raw.githubusercontent.com/tu-usuario/ai-stack-local/main/ai-stack-deployer.sh
-
-# 2. Ejecutar (modo automático)
-sudo bash ai-stack-deployer.sh
-
-# 3. O en modo interactivo (paso a paso)
-sudo bash ai-stack-deployer.sh
-# Elegir opción 2 al inicio
+```
+Subredes permitidas (192.168.x.0/24)
+        │
+        ▼
+┌─────────────────┐
+│  Firewall Host  │  UFW (Ubuntu) · firewalld rich-rules (Fedora)
+└────────┬────────┘
+         │
+         ▼
+┌──────────────────────────────────────────────┐
+│         Red Podman Aislada (ai-net)          │
+│                                              │
+│  ┌────────────────┐    ┌──────────────────┐  │
+│  │  llama-cpp     │    │   open-webui     │  │
+│  │  :3000 (host)  │◄───│   :8080 (host)   │  │
+│  │  CUDA / GGUF   │    │  RAG + WebSearch  │  │
+│  └────────────────┘    └────────┬─────────┘  │
+│         │ CDI GPU               │             │
+│         ▼                       ▼             │
+│  ┌─────────────┐      ┌──────────────────┐   │
+│  │  NVIDIA GPU │      │    searxng       │   │
+│  │  (host)     │      │  :8080 (interno) │   │
+│  └─────────────┘      └──────────────────┘   │
+└──────────────────────────────────────────────┘
+         │
+         ▼
+┌──────────────────────┐
+│  OpenCode (host)     │  Apunta a http://localhost:3000/v1
+│  CLI + Desktop GUI   │  Configurado en ~/.config/opencode/
+└──────────────────────┘
 ```
 
-### Post-instalación
+---
+
+## ⚡ Requisitos
+
+| Componente | Mínimo | Recomendado |
+|---|---|---|
+| OS | Ubuntu 22.04 / Fedora 39 | Ubuntu 24.04 / Fedora 41+ |
+| CPU | 4 cores | 8+ cores |
+| RAM | 8 GB | 16 GB+ |
+| GPU VRAM | 6 GB (modelos 7B Q4) | 12 GB+ (modelos 14B Q4/Q5) |
+| Almacenamiento | 20 GB libres | 50 GB+ |
+| Podman | 4.4+ | 5.x |
+| NVIDIA Driver | 525+ | último estable |
+
+---
+
+## 🚀 Instalación Rápida
+
+### 1. Generar el script
+
+Visita la [GitHub Page](https://TU_USUARIO.github.io/ai-stack-deployer/) o abre `index.html` localmente, configura y descarga `setup_ai_stack.sh`.
+
+### 2. Ejecutar en tu servidor
 
 ```bash
-# Iniciar el stack
+chmod +x setup_ai_stack.sh
+sudo bash setup_ai_stack.sh
+```
+
+El script ofrece **modo automático** (desatendido) e **interactivo** (confirmación paso a paso).
+
+### 3. Iniciar el stack
+
+```bash
+# Iniciar (manual, no arranca solo en el boot)
 sudo systemctl start ai-stack
 
-# Verificar que responde
-curl http://localhost:3000/v1/models
+# Verificar contenedores
+podman ps
 
-# Abrir Open WebUI en el navegador
-# http://<IP_DEL_SERVIDOR>:8080
+# Abrir en el navegador
+http://IP_DEL_SERVIDOR:8080
 ```
 
-## Arquitectura
+### 4. Usar OpenCode
 
-### Modos de ejecución
+```bash
+# En cualquier directorio de proyecto
+opencode
 
-- **Automático (opción 1):** Ejecuta todos los pasos sin preguntar
-- **Interactivo (opción 2):** Pide confirmación antes de cada fase
+# OpenCode ya está configurado apuntando a tu llama.cpp local
+# Asegúrate de que el stack esté corriendo primero
+```
 
-### Soporte GPU
+---
 
-1. Detecta GPU NVIDIA via `lspci` + `nvidia-smi`
-2. Si VRAM ≥ 10 GB → offload completo (`--n-gpu-layers -1`) con CDI
-3. Si VRAM < 10 GB → modo CPU (evita fallos por falta de VRAM)
-4. En Ubuntu 22.04 actualiza Podman al repo Kubic si es necesario
+## 📋 Pasos del Script Generado
 
-### Servicio systemd
-
-- **Tipo:** `oneshot` con `RemainAfterExit=yes`
-- **Arranque:** Manual (`sudo systemctl start ai-stack`)
-- **No** se habilita en el boot (por diseño)
-- Timeout de 15 minutos para carga del modelo
-
-## Variables de entorno
-
-Las principales variables se definen al inicio del script:
-
-| Variable | Default | Descripción |
+| # | Paso | Descripción |
 |---|---|---|
-| `LLAMA_PORT` | `3000` | Puerto para la API de llama.cpp |
-| `WEBUI_PORT` | `8080` | Puerto para Open WebUI |
-| `MODEL_NAME` | `qwen2.5-coder-14b-instruct-q4_k_m.gguf` | Modelo GGUF a descargar |
-| `CPU_THREADS` | `nproc - 1` | Threads para inferencia (deja 1 para el SO) |
+| 1 | **Dependencias** | Podman, podman-compose, pipx, slirp4netns, drivers NVIDIA |
+| 2 | **Directorios** | Crea `$INSTALL_DIR/{models,searxng}` |
+| 3 | **SearXNG** | Genera `settings.yml` con salida JSON habilitada |
+| 4 | **Compose** | Genera `podman-compose.yml` (sin `version:` obsoleto) con CDI para GPU |
+| 5 | **Modelo GGUF** | Descarga desde HuggingFace con reanudación automática (`curl -C -`) |
+| 6 | **Firewall** | UFW (Ubuntu) o firewalld rich-rules (Fedora) por subred |
+| 7 | **OpenCode** | Instala vía `opencode.ai/install` y genera config apuntando al stack |
+| 8 | **Systemd** | Crea `ai-stack.service` sin habilitarlo en el arranque |
+| 9 | **Pull imágenes** | Pre-descarga imágenes Podman para acelerar el primer inicio |
 
-## Comandos útiles
+---
 
-```bash
-# Gestión del stack
-sudo systemctl start ai-stack      # Iniciar
-sudo systemctl stop ai-stack       # Detener
-sudo systemctl status ai-stack     # Estado
-sudo journalctl -u ai-stack -f     # Logs en tiempo real
-
-# Contenedores
-sudo podman ps                     # Listar contenedores activos
-sudo podman-compose -f ~/ai-stack/podman-compose.yml logs -f  # Logs de todos los servicios
-
-# API
-curl http://localhost:3000/v1/models                         # Listar modelos
-curl http://localhost:3000/v1/chat/completions \              # Chat
-  -d '{"model":"llm-model","messages":[{"role":"user","content":"Hola"}]}'
-
-# OpenCode (terminal)
-opencode                         # Iniciar sesión IA
-```
-
-## Personalización
-
-### Cambiar el modelo
-
-1. Descarga otro GGUF en `~/ai-stack/models/`
-2. Edita `~/ai-stack/podman-compose.yml` y cambia el nombre del modelo en la sección `llama-cpp` → `command`
-3. Reinicia: `sudo systemctl restart ai-stack`
-
-### Habilitar autenticación en Open WebUI
+## 🔧 Comandos Útiles
 
 ```bash
-# Editar el compose y cambiar:
-#   WEBUI_AUTH=False → WEBUI_AUTH=True
+# ── Stack ─────────────────────────────────────────────────────────────────
+sudo systemctl start   ai-stack    # Iniciar
+sudo systemctl stop    ai-stack    # Detener
+sudo systemctl restart ai-stack    # Reiniciar
+
+# ── Podman ────────────────────────────────────────────────────────────────
+podman ps                           # Ver contenedores corriendo
+podman logs ai-stack-llama-cpp      # Logs de llama.cpp
+podman logs ai-stack-open-webui     # Logs de Open WebUI
+
+# ── Actualizar imágenes ───────────────────────────────────────────────────
+cd ~/ai-stack
+podman compose pull
 sudo systemctl restart ai-stack
-# Acceder a http://IP:8080/auth/signup para crear el primer usuario
+
+# ── Firewall (Ubuntu) ─────────────────────────────────────────────────────
+sudo ufw status numbered
+
+# ── Firewall (Fedora) ─────────────────────────────────────────────────────
+sudo firewall-cmd --list-all
+
+# ── OpenCode ──────────────────────────────────────────────────────────────
+opencode                            # Iniciar agente en el directorio actual
+cat ~/.config/opencode/opencode.json  # Ver configuración del proveedor local
 ```
 
-### Arranque automático (no recomendado)
+---
 
-```bash
-sudo systemctl enable ai-stack
+## 🔐 Seguridad
+
+- **Podman rootless**: los contenedores corren sin privilegios root en tiempo de ejecución
+- **CDI (Container Device Interface)**: acceso a GPU sin `--privileged`
+- **Firewall por subred**: solo las IPs configuradas acceden a los puertos del stack
+- **Sin arranque automático**: el stack no expone puertos en el boot; inicio siempre explícito
+- **Sin API key real**: llama.cpp local no requiere autenticación (red privada)
+
+---
+
+## 🗂️ Estructura de Archivos Generados
+
+```
+$INSTALL_DIR/           (default: ~/ai-stack)
+├── podman-compose.yml  # Definición de servicios Podman
+├── models/
+│   └── modelo.gguf     # Modelo descargado desde HuggingFace
+└── searxng/
+    └── settings.yml    # Configuración SearXNG con JSON habilitado
+
+~/.config/opencode/
+├── opencode.json       # Provider llama.cpp local
+└── auth.json           # Placeholder de API key para el provider local
+
+/etc/systemd/system/
+└── ai-stack.service    # Servicio (inicio manual)
+
+/etc/cdi/
+└── nvidia.yaml         # CDI spec generado por nvidia-ctk
 ```
 
-## Solución de problemas
+---
 
-### Error: "No se pudo instalar podman-compose"
+## 🧩 Modelos GGUF Soportados
 
-```bash
-# Instalar manualmente
-pipx install podman-compose
-ln -sf ~/.local/bin/podman-compose /usr/local/bin/podman-compose
-```
+El catálogo incluye 60+ modelos preconfigurados con sus repos HuggingFace correctos:
 
-### GPU no detectada
+- **Qwen 2.5** (Coder, Instruct, Math) — 0.5B a 72B
+- **DeepSeek R1** (Distill Qwen/Llama) — 1.5B a 70B
+- **Gemma 2** (Google) — 2B a 27B + CodeGemma
+- **Llama 3.x** (Meta) — 1B a 70B
+- **Mistral / Mixtral** — 7B / 8x7B
+- **Phi-3.5** (Microsoft) — 3.8B / 14B
+- **Hermes, Granite, SmolLM2, Falcon3, TinyLlama** y más
 
-```bash
-# Verificar drivers
-nvidia-smi
-# Si no está instalado:
-sudo ubuntu-drivers autoinstall && sudo reboot
-```
+También puedes ingresar cualquier modelo GGUF personalizado desde HuggingFace con verificación en tiempo real.
 
-### Contenedor llama.cpp no arranca
+---
 
-```bash
-sudo podman-compose -f ~/ai-stack/podman-compose.yml logs llama-cpp
-# Verificar que el modelo GGUF existe:
-ls -lh ~/ai-stack/models/
-```
+## 📄 Licencia
 
-## Notas
+MIT © 2025 — Hecho con precisión para DevOps Linux
 
-- El script ejecuta Podman en modo **rootful** (más estable en Ubuntu)
-- Los contenedores NO se inician automáticamente al encender el equipo
-- El primer arranque descarga las imágenes Docker/Podman (~2-3 GB)
-- La primera carga del modelo en CPU puede tomar varios minutos
-- El `secret_key` de SearXNG debe cambiarse en producción
+---
+
+## 🙏 Créditos
+
+- [ggml-org/llama.cpp](https://github.com/ggml-org/llama.cpp) — Georgi Gerganov y comunidad
+- [open-webui/open-webui](https://github.com/open-webui/open-webui) — Timothy J. Baek y comunidad
+- [searxng/searxng](https://github.com/searxng/searxng) — Comunidad SearXNG
+- [anomalyco/opencode](https://github.com/anomalyco/opencode) — Adam Elmore y comunidad
+- [containers/podman](https://github.com/containers/podman) — Red Hat y comunidad OCI
